@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REVOLVER — Back Office</title>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700;800&family=Google+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0c0f13;--surface:#131820;--surface2:#1a2130;--surface3:#212d40;
+  --border:#1e2d42;--border2:#253347;
+  --accent:#00d68f;--accent-dim:rgba(0,214,143,0.1);--accent-border:rgba(0,214,143,0.22);
+  --blue:#3b82f6;--blue-dim:rgba(59,130,246,0.1);--blue-border:rgba(59,130,246,0.22);
+  --amber:#f59e0b;--amber-dim:rgba(245,158,11,0.1);--amber-border:rgba(245,158,11,0.22);
+  --red:#ef4444;--red-dim:rgba(239,68,68,0.1);--red-border:rgba(239,68,68,0.22);
+  --purple:#8b5cf6;--purple-dim:rgba(139,92,246,0.1);
+  --text:#e2eaf5;--muted:#6b8099;--hint:#3d5166;
+  --font:'Google Sans','Segoe UI','Helvetica Neue',Arial,sans-serif;
+  --mono:'Google Sans Mono','Courier New',monospace;
+  --r:8px;--r-lg:12px;--r-xl:16px;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+*{font-family:inherit}
+input,select,button,textarea{font-family:var(--font)}
+a{text-decoration:none;color:inherit}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* SIDEBAR */
+.sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);height:100vh;position:fixed;left:0;top:0;display:flex;flex-direction:column;z-index:100;overflow-y:auto}
+.logo{padding:22px 20px 18px;border-bottom:1px solid var(--border)}
+.logo-mark{display:flex;align-items:center;gap:10px;margin-bottom:2px}
+.logo-icon{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#000;flex-shrink:0}
+.logo h1{font-size:18px;font-weight:800;letter-spacing:-0.02em;color:var(--text)}
+.logo p{font-size:10px;color:var(--muted);letter-spacing:0.05em;text-transform:uppercase;margin-top:2px}
+.nav-section{padding:14px 12px 6px}
+.nav-label{font-size:9px;color:var(--hint);letter-spacing:0.12em;text-transform:uppercase;font-family:var(--mono);padding:0 8px;margin-bottom:6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r);cursor:pointer;margin-bottom:2px;transition:all 0.15s;color:var(--muted);font-size:13px;font-weight:500}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent-border)}
+.nav-icon{width:18px;text-align:center;font-size:14px;flex-shrink:0}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:9px;padding:1px 6px;border-radius:8px;font-weight:700}
+.sidebar-footer{margin-top:auto;padding:14px 12px;border-top:1px solid var(--border)}
+.user-pill{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--r);background:var(--surface2)}
+.user-av{width:30px;height:30px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.user-name{font-size:12px;font-weight:600;color:var(--text)}
+.user-role{font-size:10px;color:var(--muted)}
+
+/* MAIN */
+.main{margin-left:220px;padding:24px 28px;min-height:100vh}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.page-title{font-size:22px;font-weight:800;letter-spacing:-0.02em;color:var(--text)}
+.page-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.topbar-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.btn{padding:8px 14px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all 0.15s;white-space:nowrap}
+.btn:hover{background:var(--surface2);border-color:var(--border2)}
+.btn.primary{background:var(--accent);color:#000;border-color:var(--accent);font-weight:700}
+.btn.primary:hover{opacity:0.88}
+.btn.danger{background:var(--red-dim);color:var(--red);border-color:var(--red-border)}
+.btn.amber{background:var(--amber-dim);color:var(--amber);border-color:var(--amber-border)}
+.notif-btn{width:36px;height:36px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;flex-shrink:0}
+.notif-dot{position:absolute;top:7px;right:7px;width:7px;height:7px;background:var(--red);border-radius:50%;border:2px solid var(--bg)}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;position:relative;overflow:hidden;cursor:pointer;transition:border-color 0.2s}
+.stat-card:hover{border-color:var(--border2)}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.stat-card.g::before{background:var(--accent)}.stat-card.b::before{background:var(--blue)}
+.stat-card.a::before{background:var(--amber)}.stat-card.r::before{background:var(--red)}
+.stat-card.p::before{background:var(--purple)}
+.stat-label{font-size:10px;color:var(--muted);letter-spacing:0.05em;text-transform:uppercase;font-family:var(--mono);margin-bottom:8px}
+.stat-val{font-size:24px;font-weight:800;letter-spacing:-0.03em;line-height:1}
+.stat-val.g{color:var(--accent)}.stat-val.b{color:var(--blue)}.stat-val.a{color:var(--amber)}.stat-val.r{color:var(--red)}.stat-val.p{color:var(--purple)}
+.stat-chg{font-size:11px;margin-top:6px}.stat-chg.up{color:var(--accent)}.stat-chg.dn{color:var(--red)}.stat-chg.nt{color:var(--muted)}
+
+/* PANEL */
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
+.ph{padding:15px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.pt{font-size:13px;font-weight:700;color:var(--text)}
+.ps{font-size:11px;color:var(--muted);margin-top:1px}
+.pa{font-size:11px;color:var(--accent);cursor:pointer;font-weight:500}
+
+/* TABLE */
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead th{font-size:10px;color:var(--hint);letter-spacing:0.08em;text-transform:uppercase;font-family:var(--mono);padding:10px 16px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;background:var(--surface)}
+tbody td{padding:11px 16px;border-bottom:1px solid rgba(30,45,66,0.5);font-size:13px;color:var(--text);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr{cursor:pointer;transition:background 0.1s}
+tbody tr:hover{background:rgba(255,255,255,0.018)}
+tbody tr.sel{background:var(--accent-dim)}
+.tm{font-family:var(--mono);font-size:11px;color:var(--muted)}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;border:1px solid;white-space:nowrap}
+.badge::before{content:'';width:4px;height:4px;border-radius:50%;background:currentColor;flex-shrink:0}
+.bg{color:var(--accent);border-color:var(--accent-border);background:var(--accent-dim)}
+.bb{color:var(--blue);border-color:var(--blue-border);background:var(--blue-dim)}
+.ba{color:var(--amber);border-color:var(--amber-border);background:var(--amber-dim)}
+.br{color:var(--red);border-color:var(--red-border);background:var(--red-dim)}
+.bgr{color:var(--muted);border-color:var(--border);background:var(--surface2)}
+.bp{color:var(--purple);border-color:rgba(139,92,246,0.3);background:var(--purple-dim)}
+
+/* VIEWS */
+.view{display:none}.view.active{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fi 0.25s ease both}
+
+/* CHARTS */
+.bar-chart{display:flex;align-items:flex-end;gap:3px}
+.bc{flex:1;border-radius:3px 3px 0 0;transition:height 0.6s ease;cursor:pointer;min-height:4px}
+.bc:hover{opacity:0.75}
+.chart-x{display:flex;justify-content:space-between;font-size:9px;color:var(--hint);font-family:var(--mono);padding:4px 1px 0}
+.spark{display:inline-flex;align-items:flex-end;gap:1px;height:18px;vertical-align:middle}
+.sb{width:3px;border-radius:1px}
+
+/* BEHAVIOUR BARS */
+.bh-bar{margin-bottom:8px}
+.bh-top{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px}
+.bh-lbl{color:var(--muted)}.bh-val{font-weight:600;font-family:var(--mono)}
+.bh-track{height:4px;background:var(--surface3);border-radius:2px;overflow:hidden}
+.bh-fill{height:100%;border-radius:2px;transition:width 0.8s cubic-bezier(.4,0,.2,1)}
+
+/* SCORE RING */
+.sr-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center}
+.sr-wrap svg{transform:rotate(-90deg)}
+.sr-inner{position:absolute;font-size:11px;font-weight:700;font-family:var(--mono)}
+
+/* TIMELINE */
+.tl-row{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid rgba(30,45,66,0.4)}
+.tl-row:last-child{border-bottom:none}
+.tl-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.tl-txt{font-size:12px;color:var(--text);line-height:1.4;flex:1}
+.tl-dt{font-size:10px;color:var(--hint);font-family:var(--mono);white-space:nowrap}
+
+/* INSIGHT BOX */
+.insight-box{padding:12px;background:var(--blue-dim);border:1px solid var(--blue-border);border-radius:var(--r)}
+.insight-label{font-size:10px;color:var(--blue);font-family:var(--mono);font-weight:500;margin-bottom:5px}
+.insight-text{font-size:12px;color:var(--text);line-height:1.65}
+
+/* FEED */
+.feed-item{padding:11px 16px;border-bottom:1px solid rgba(30,45,66,0.4);display:flex;align-items:flex-start;gap:10px;cursor:pointer;transition:background 0.1s}
+.feed-item:hover{background:rgba(255,255,255,0.01)}
+.fi-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.fi-title{font-size:12px;color:var(--text);line-height:1.4}
+.fi-time{font-size:10px;color:var(--hint);font-family:var(--mono);margin-top:1px}
+
+/* METRIC MINI */
+.mm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:14px}
+.mm{background:var(--surface2);border-radius:var(--r);padding:10px;text-align:center}
+.mm-val{font-size:16px;font-weight:700;letter-spacing:-0.02em}
+.mm-lbl{font-size:10px;color:var(--muted);margin-top:2px;font-family:var(--mono)}
+
+/* SEARCH BAR */
+.search-bar{display:flex;gap:8px;padding:12px 16px;border-bottom:1px solid var(--border)}
+.si{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:8px 12px;color:var(--text);font-size:13px;outline:none;transition:border-color 0.2s}
+.si:focus{border-color:var(--accent)}
+.si::placeholder{color:var(--hint)}
+.fs{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:8px 10px;color:var(--muted);font-size:12px;outline:none;cursor:pointer}
+
+/* CREDIT SCORE BIG */
+.cs-big{text-align:center;padding:16px 14px 6px}
+.cs-num{font-size:44px;font-weight:800;letter-spacing:-0.04em;line-height:1}
+.cs-lbl{font-size:11px;font-family:var(--mono);margin-top:3px}
+.cs-bar{margin:10px 16px 0;height:7px;border-radius:4px;background:linear-gradient(to right,var(--red),var(--amber),var(--accent));position:relative}
+.cs-needle{position:absolute;top:-4px;width:15px;height:15px;border-radius:50%;background:#fff;border:3px solid var(--text);transform:translateX(-50%);transition:left 0.8s cubic-bezier(.4,0,.2,1)}
+.cs-range{display:flex;justify-content:space-between;font-size:9px;font-family:var(--mono);color:var(--hint);padding:3px 16px}
+
+/* CONFIG */
+.cfg-group{margin-bottom:22px}
+.cfg-group-title{font-size:11px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;padding-bottom:7px;border-bottom:1px solid var(--border)}
+.cfg-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cfg-item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px}
+.cfg-item label{font-size:10px;color:var(--muted);font-family:var(--mono);display:block;margin-bottom:6px}
+.cfg-val{font-size:18px;font-weight:700;color:var(--text);margin-bottom:6px}
+.cfg-item input[type=range]{width:100%;accent-color:var(--accent)}
+.cfg-item input[type=text],.cfg-item input[type=number],.cfg-item select,.cfg-item textarea{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);font-size:12px;outline:none;margin-top:4px}
+.cfg-item input:focus,.cfg-item select:focus,.cfg-item textarea:focus{border-color:var(--accent)}
+.cfg-hint{font-size:10px;color:var(--hint);margin-top:3px;font-family:var(--mono)}
+.tog-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(30,45,66,0.5)}
+.tog-row:last-child{border-bottom:none}
+.tog-lbl{font-size:13px;color:var(--text)}.tog-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.tog{width:38px;height:21px;border-radius:11px;background:var(--surface3);border:1px solid var(--border);position:relative;cursor:pointer;transition:background 0.2s;flex-shrink:0}
+.tog.on{background:var(--accent);border-color:var(--accent)}
+.tog::after{content:'';position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;background:#fff;transition:left 0.18s}
+.tog.on::after{left:19px}
+
+/* TABS inside view */
+.view-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px;gap:0}
+.vt{padding:10px 18px;font-size:12px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;color:var(--muted);margin-bottom:-1px;transition:all 0.15s}
+.vt.active{color:var(--accent);border-bottom-color:var(--accent)}
+.vt:hover:not(.active){color:var(--text)}
+.vtab{display:none}.vtab.active{display:block}
+
+/* PRODUCT CARD (LMS) */
+.prod-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px;cursor:pointer;transition:border-color 0.2s;position:relative}
+.prod-card:hover{border-color:var(--border2)}
+.prod-card.active-prod{border-color:var(--accent)}
+.prod-card-badge{position:absolute;top:12px;right:12px}
+.prod-name{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px}
+.prod-type{font-size:11px;color:var(--muted);margin-bottom:10px}
+.prod-params{display:flex;flex-direction:column;gap:5px}
+.prod-param{display:flex;justify-content:space-between;font-size:11px}
+.prod-param span:first-child{color:var(--muted)}.prod-param span:last-child{font-weight:600;font-family:var(--mono)}
+
+/* AUDIT */
+.audit-row{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-bottom:1px solid rgba(30,45,66,0.4);font-size:12px}
+.audit-row:last-child{border-bottom:none}
+.audit-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;font-family:var(--mono);font-weight:700}
+.audit-action{font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px}
+.audit-detail{font-size:11px;color:var(--muted)}
+.audit-meta{font-size:10px;color:var(--hint);font-family:var(--mono);white-space:nowrap;text-align:right;min-width:90px}
+
+/* REPORT TABS */
+.rprt-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.rprt-period{display:flex;gap:6px;margin-bottom:18px}
+.period-btn{padding:6px 14px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:12px;cursor:pointer;transition:all 0.15s}
+.period-btn.active{background:var(--accent-dim);color:var(--accent);border-color:var(--accent-border)}
+.period-btn:hover:not(.active){background:var(--surface2);color:var(--text)}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
+.modal-bg.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r-xl);width:520px;max-height:85vh;overflow-y:auto;padding:24px}
+.modal h3{font-size:17px;font-weight:800;margin-bottom:3px}
+.modal-sub{font-size:12px;color:var(--muted);margin-bottom:18px}
+.mf{margin-bottom:12px}
+.mf label{font-size:11px;color:var(--muted);font-family:var(--mono);display:block;margin-bottom:4px}
+.mi{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:8px 12px;color:var(--text);font-size:13px;outline:none}
+.mi:focus{border-color:var(--accent)}
+.ma{display:flex;gap:8px;margin-top:18px}
+
+/* TOAST */
+.toast-wrap{position:fixed;bottom:22px;right:22px;display:flex;flex-direction:column;gap:7px;z-index:999;pointer-events:none}
+.toast{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:11px 16px;font-size:12px;color:var(--text);opacity:0;transform:translateY(6px);transition:all 0.25s;display:flex;align-items:center;gap:8px;min-width:240px}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-mark">
+      <div class="logo-icon">R</div>
+      <h1>REVOLVER</h1>
+    </div>
+    <p>Nipeboost · Tanzania</p>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Overview</div>
+    <div class="nav-item active" onclick="nav('dashboard')"><span class="nav-icon">◈</span>Dashboard</div>
+    <div class="nav-item" onclick="nav('borrowers')"><span class="nav-icon">◎</span>Borrowers<span class="nav-badge">2847</span></div>
+    <div class="nav-item" onclick="nav('loans')"><span class="nav-icon">◇</span>Loans</div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Operations</div>
+    <div class="nav-item" onclick="nav('qc')"><span class="nav-icon">✦</span>QC Approvals<span class="nav-badge">12</span></div>
+    <div class="nav-item" onclick="nav('collections')"><span class="nav-icon">△</span>Collections</div>
+    <div class="nav-item" onclick="nav('disbursements')"><span class="nav-icon">⬡</span>Disbursements</div>
+    <div class="nav-item" onclick="nav('repayments')"><span class="nav-icon">⬢</span>Repayments</div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Analytics</div>
+    <div class="nav-item" onclick="nav('insights')"><span class="nav-icon">◈</span>Insights</div>
+    <div class="nav-item" onclick="nav('reports')"><span class="nav-icon">▦</span>Reports</div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">System</div>
+    <div class="nav-item" onclick="nav('lms')"><span class="nav-icon">⚙</span>LMS Config</div>
+    <div class="nav-item" onclick="nav('users')"><span class="nav-icon">◉</span>Portal Users</div>
+    <div class="nav-item" onclick="nav('audit')"><span class="nav-icon">▤</span>Audit Log</div>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="user-pill">
+      <div class="user-av">AM</div>
+      <div>
+        <div class="user-name">Admin User</div>
+        <div class="user-role">Administrator</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+
+<!-- DASHBOARD -->
+<div id="view-dashboard" class="view active fade-in">
+  <div class="topbar">
+    <div><div class="page-title">Dashboard</div><div class="page-sub">Monday, 27 April 2026 · Live portfolio overview</div></div>
+    <div class="topbar-right">
+      <button class="btn" onclick="showToast('Report exported','accent')">⬇ Export</button>
+      <button class="btn primary" onclick="nav('qc')">✦ QC Queue (12)</button>
+      <div class="notif-btn">🔔<div class="notif-dot"></div></div>
+    </div>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card g" onclick="nav('borrowers')"><div class="stat-label">Active borrowers</div><div class="stat-val g">2,847</div><div class="stat-chg up">▲ 134 this month</div></div>
+    <div class="stat-card b" onclick="nav('loans')"><div class="stat-label">Portfolio value</div><div class="stat-val b">TZS 4.2B</div><div class="stat-chg up">▲ 12.4% MoM</div></div>
+    <div class="stat-card g" onclick="nav('reports')"><div class="stat-label">Interest earned (Apr)</div><div class="stat-val g">TZS 186M</div><div class="stat-chg up">▲ 8.3% vs Mar</div></div>
+    <div class="stat-card a" onclick="nav('collections')"><div class="stat-label">In arrears</div><div class="stat-val a">162</div><div class="stat-chg dn">5.7% of portfolio</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 330px;gap:18px">
+    <div>
+      <div class="panel" style="margin-bottom:16px">
+        <div class="ph"><div><div class="pt">Disbursements vs Returns</div><div class="ps">TZS millions — last 7 months</div></div><span class="pa" onclick="nav('reports')">Full report →</span></div>
+        <div style="padding:18px 20px 10px">
+          <div style="display:flex;gap:12px;margin-bottom:10px">
+            <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:2px;background:var(--blue)"></div>Disbursed</div>
+            <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:2px;background:var(--accent)"></div>Returned</div>
+            <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:2px;background:var(--purple)"></div>Interest</div>
+          </div>
+          <div class="bar-chart" id="dash-chart" style="height:100px;gap:6px"></div>
+          <div class="chart-x"><span>Oct</span><span>Nov</span><span>Dec</span><span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="ph"><div><div class="pt">Recent activity</div><div class="ps">Latest loans, repayments & prolongations</div></div><span class="pa" onclick="nav('loans')">View all →</span></div>
+        <div class="tw"><table>
+          <thead><tr><th>Borrower</th><th>Amount</th><th>Type</th><th>Score</th><th>Date</th></tr></thead>
+          <tbody id="activity-table"></tbody>
+        </table></div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="panel">
+        <div class="ph"><div><div class="pt">Portfolio signals</div><div class="ps">Updated every 15 min</div></div></div>
+        <div style="padding:14px;display:flex;flex-direction:column;gap:10px">
+          <div class="insight-box">
+            <div class="insight-label">◈ Portfolio health — Stable</div>
+            <div class="insight-text">Repayment velocity up <strong>12%</strong> WoW. <strong>38 borrowers</strong> need proactive outreach before end of week. Interest yield tracking ahead of target.</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--muted)">Prime</span><span style="color:var(--accent);font-weight:600">1,847 (64.9%)</span></div>
+            <div style="height:5px;background:var(--surface3);border-radius:3px"><div style="width:64.9%;height:100%;background:var(--accent);border-radius:3px"></div></div>
+            <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--muted)">Standard</span><span style="color:var(--blue);font-weight:600">838 (29.4%)</span></div>
+            <div style="height:5px;background:var(--surface3);border-radius:3px"><div style="width:29.4%;height:100%;background:var(--blue);border-radius:3px"></div></div>
+            <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--muted)">High risk</span><span style="color:var(--red);font-weight:600">162 (5.7%)</span></div>
+            <div style="height:5px;background:var(--surface3);border-radius:3px"><div style="width:5.7%;height:100%;background:var(--red);border-radius:3px"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="ph"><div class="pt">Live activity</div></div>
+        <div id="live-feed"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BORROWERS -->
+<div id="view-borrowers" class="view fade-in">
+  <div class="topbar">
+    <div><div class="page-title">Borrowers</div><div class="page-sub">Scored borrower profiles — click any row for full detail</div></div>
+    <div class="topbar-right">
+      <button class="btn" onclick="openModal('new-borrower')">+ Register</button>
+      <button class="btn" onclick="showToast('Exported to CSV','accent')">⬇ Export</button>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 360px;gap:18px;align-items:start">
+    <div class="panel">
+      <div class="search-bar">
+        <input class="si" placeholder="Search by name, employer, phone…" oninput="filterBorrowers(this.value)">
+        <select class="fs" onchange="filterByStatus(this.value)"><option value="">All status</option><option value="good">Good standing</option><option value="warning">Warning</option><option value="critical">Critical</option></select>
+        <select class="fs" onchange="filterByClass(this.value)"><option value="">All classes</option><option value="Prime">Prime</option><option value="Standard">Standard</option><option value="High Risk">High Risk</option></select>
+      </div>
+      <div class="tw"><table>
+        <thead><tr><th>Borrower</th><th>Employer</th><th>Score</th><th>Limit</th><th>Outstanding</th><th>Class</th><th>Channel</th><th>Arrears</th></tr></thead>
+        <tbody id="borrower-table"></tbody>
+      </table></div>
+    </div>
+    <div class="panel" style="position:sticky;top:24px">
+      <div style="padding:36px 20px;text-align:center;color:var(--hint)" id="b-placeholder"><div style="font-size:28px;margin-bottom:8px">◎</div><div style="font-size:13px">Select a borrower to view their profile</div></div>
+      <div id="borrower-detail" style="display:none"></div>
+    </div>
+  </div>
+</div>
+
+<!-- LOANS -->
+<div id="view-loans" class="view fade-in">
+  <div class="topbar">
+    <div><div class="page-title">Loan Portfolio</div><div class="page-sub">All active, overdue and closed loans</div></div>
+    <div class="topbar-right">
+      <select class="fs" style="padding:8px 12px"><option>All loans</option><option>Active</option><option>Overdue</option><option>Closed</option></select>
+      <button class="btn" onclick="showToast('Exported to Excel','accent')">⬇ Export</button>
+    </div>
+  </div>
+  <div class="panel"><div class="tw"><table>
+    <thead><tr><th>Loan ID</th><th>Borrower</th><th>Product</th><th>Principal</th><th>Interest</th><th>Total due</th><th>Due date</th><th>Days</th><th>Status</th><th>MNO</th></tr></thead>
+    <tbody id="loans-table"></tbody>
+  </table></div></div>
+</div>
+
+<!-- QC -->
+<div id="view-qc" class="view fade-in">
+  <div class="topbar">
+    <div><div class="page-title">QC Approvals</div><div class="page-sub">12 registrations pending · CRB check required before approval</div></div>
+    <div class="topbar-right"><button class="btn primary" onclick="showToast('Batch CRB check initiated','blue')">⚡ Batch CRB check</button></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 380px;gap:18px;align-items:start">
+    <div class="panel"><div id="qc-list"></div></div>
+    <div class="panel" id="qc-detail" style="position:sticky;top:24px">
+      <div style="padding:36px 20px;text-align:center;color:var(--hint)"><div style="font-size:28px;margin-bottom:8px">✦</div><div style="font-size:13px">Select a registration to review</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- COLLECTIONS -->
+<div id="view-collections" class="view fade-in">
+  <div class="topbar">
+    <div><div class="page-title">Collections</div><div class="page-sub">Arrears management & automated escalation stages</div></div>
+    <div class="topbar-right">
+      <button class="btn" onclick="showToast('Batch SMS dispatched to 38 borrowers','accent')">📨 Batch SMS</button>
+      <button class="btn primary" onclick="showToast('WhatsApp blast queued','accent')">💬 WhatsApp blast</button>
+    </div>
+  </div>
+  <div class="stats-grid" style="margin-bottom:16px">
+    <div class="stat-card a"><div class="stat-label">BDD 1–4 days</div><div class="stat-val a">47</div><div class="stat-chg nt">Auto-SMS active</div></div>
+    <div class="stat-card a"><div class="stat-label">PDD1 1–30 days</div><div class="stat-val a">68</div><div class="stat-chg dn">Soft collection</div></div>
+    <div class="stat-card r"><div class="stat-label">PDD2 31–90 days</div><div class="stat-val r">48</div><div class="stat-chg dn">Hard collection</div></div>
+    <div class="stat-card r"><div class="stat-label">PDD3 90+ days</div><div class="stat-val r">23</div><div class="stat-chg dn">CRB eligible</div></div>
+  </div>
+  <div class="panel"><div class="ph"><div class="pt">Arrears portfolio</div></div>
+    <div class="tw"><table>
+      <thead><tr><th>Borrower</th><th>Employer</th><th>Outstanding</th><th>Days overdue</th><th>Stage</th><th>Last contact</th><th></th></tr></thead>
+      <tbody id="collections-table"></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- DISBURSEMENTS -->
+<div id="view-disbursements" class="view fade-in">
+  <div class="topbar">
+    <div><div class="page-title">Disbursements</div><div class="page-sub">B2C outflows — Mpesa, TigoPesa, AirtelMoney</div></div>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card g"><div class="stat-label">Today disbursed</div><div class="stat-val g">TZS 142M</div><div class="stat-chg up">▲ 34 loans</div></div>
+    <div class="stat-card b"><div class="stat-label">Mpesa</div><div class="stat-val b">TZS 68M</div><div class="stat-chg nt">48%</div></div>
+    <div class="stat-card b"><div class="stat-label">TigoPesa</div><div class="stat-val b">TZS 45M</div><div class="stat-chg nt">32%</div></div>
+    <div class="stat-card b"><div class="stat-label">AirtelMoney</div><div class="stat-val b">TZS 29M</div><div class="stat-chg nt">20%</div></div>
+  </div>
+  <div class="panel"><div class="ph"><div class="pt">Disbursement log</div><div class="ps">Real-time B2C feed</div></div>
+    <div class="tw"><table>
+      <thead><tr><th>Txn ID</th><th>Borrower</th><th>Product</th><th>Amount</th><th>MNO</th><th>Status</th><th>Time</th></tr></thead>
+      <tbody id="disbursement-table"></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- REPAYMENTS -->
+<div id="view-repayments" class="view fade-in">
+  <div class="topbar">
+    <div><div class="page-title">Repayments</div><div class="page-sub">C2B inflows — all MNOs</div></div>
+    <div class="topbar-right"><button class="btn" onclick="openModal('manual-repayment')">+ Manual posting</button></div>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card g"><div class="stat-label">Today received</div><div class="stat-val g">TZS 98M</div><div class="stat-chg up">▲ 28 payments</div></div>
+    <div class="stat-card g"><div class="stat-label">Full repayments</div><div class="stat-val g">19</div><div class="stat-chg up">68% of today's</div></div>
+    <div class="stat-card a"><div class="stat-label">Partial payments</div><div class="stat-val a">9</div><div class="stat-chg nt">32% of today's</div></div>
+    <div class="stat-card p"><div class="stat-label">Prolongation fees</div><div class="stat-val p">TZS 4.2M</div><div class="stat-chg nt">Today</div></div>
+  </div>
+  <div class="panel"><div class="ph"><div class="pt">Repayment log</div></div>
+    <div class="tw"><table>
+      <thead><tr><th>Ref</th><th>Borrower</th><th>Paid</th><th>Balance after</th><th>MNO</th><th>Type</th><th>Date</th></tr></thead>
+      <tbody id="repayment-table"></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- INSIGHTS -->
+<div id="view-insights" class="view fade-in">
+  <div class="topbar">
+    <div><div class="page-title">Insights</div><div class="page-sub">Behavioural analysis, risk classification & credit intelligence</div></div>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card g"><div class="stat-label">Prediction accuracy</div><div class="stat-val g">94.7%</div><div class="stat-chg up">Default detection (90d)</div></div>
+    <div class="stat-card a"><div class="stat-label">Flagged this week</div><div class="stat-val a">38</div><div class="stat-chg dn">High flight-risk</div></div>
+    <div class="stat-card b"><div class="stat-label">Auto-actions today</div><div class="stat-val b">247</div><div class="stat-chg nt">SMS + WhatsApp</div></div>
+    <div class="stat-card p"><div class="stat-label">Avg credit score</div><div class="stat-val p">718</div><div class="stat-chg up">▲ 12 pts MoM</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+    <div class="panel">
+      <div class="ph"><div class="pt">Scoring dimensions — portfolio avg</div></div>
+      <div style="padding:18px" id="insights-bars"></div>
+    </div>
+    <div class="panel">
+      <div class="ph"><div class="pt">Credit classification</div></div>
+      <div style="padding:18px;display:flex;flex-direction:column;gap:12px">
+        <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--muted)">Prime (750+)</span><span style="font-weight:700;color:var(--accent)">1,847 · 64.9%</span></div><div style="height:8px;background:var(--surface3);border-radius:4px"><div style="width:64.9%;height:100%;background:var(--accent);border-radius:4px"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--muted)">Standard (600–749)</span><span style="font-weight:700;color:var(--blue)">838 · 29.4%</span></div><div style="height:8px;background:var(--surface3);border-radius:4px"><div style="width:29.4%;height:100%;background:var(--blue);border-radius:4px"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--muted)">Monitor (500–599)</span><span style="font-weight:700;color:var(--amber)">139 · 4.9%</span></div><div style="height:8px;background:var(--surface3);border-radius:4px"><div style="width:4.9%;height:100%;background:var(--amber);border-radius:4px"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--muted)">High risk (below 500)</span><span style="font-weight:700;color:var(--red)">23 · 0.8%</span></div><div style="height:8px;background:var(--surface3);border-radius:4px"><div style="width:0.8%;height:100%;background:var(--red);border-radius:4px"></div></div></div>
+      </div>
+      <div style="padding:0 18px 18px">
+        <div class="insight-box">
+          <div class="insight-label">◈ Signals this week</div>
+          <div class="insight-text">Primary risk signals: 72h WhatsApp read-rate drop, missed SMS acknowledgement, channel absence &gt;14 days. Recommend outreach to flagged cohort before due dates.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REPORTS -->
+<div id="view-reports" class="view fade-in">
+  <div class="topbar">
+    <div><div class="page-title">Reports</div><div class="page-sub">Financial performance — disbursements, returns & interest income</div></div>
+    <div class="topbar-right">
+      <button class="btn" onclick="showToast('Report exported to Excel','accent')">⬇ Excel</button>
+      <button class="btn" onclick="showToast('PDF generated','accent')">⬇ PDF</button>
+    </div>
+  </div>
+  <!-- Period selector -->
+  <div class="rprt-period">
+    <button class="period-btn active" onclick="setPeriod(this,'day')">Daily</button>
+    <button class="period-btn" onclick="setPeriod(this,'week')">Weekly</button>
+    <button class="period-btn" onclick="setPeriod(this,'month')">Monthly</button>
+    <button class="period-btn" onclick="setPeriod(this,'quarter')">Quarterly</button>
+    <button class="period-btn" onclick="setPeriod(this,'year')">Yearly</button>
+  </div>
+  <!-- KPI cards -->
+  <div class="rprt-kpi" id="report-kpis"></div>
+
+  <div class="view-tabs">
+    <div class="vt active" onclick="switchReportTab(this,'overview')">Overview</div>
+    <div class="vt" onclick="switchReportTab(this,'interest')">Interest Income</div>
+    <div class="vt" onclick="switchReportTab(this,'returns')">Returns & Recovery</div>
+    <div class="vt" onclick="switchReportTab(this,'borrower')">Per-Borrower</div>
+    <div class="vt" onclick="switchReportTab(this,'product')">By Product</div>
+  </div>
+
+  <div id="rtab-overview" class="vtab active">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px">
+      <div class="panel">
+        <div class="ph"><div><div class="pt">Disbursed vs Returned</div><div class="ps" id="r-period-label">Today</div></div></div>
+        <div style="padding:18px">
+          <div class="bar-chart" id="r-disbvret" style="height:120px;gap:4px"></div>
+          <div class="chart-x" id="r-disbvret-x"></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="ph"><div><div class="pt">Net interest income</div><div class="ps" id="r-period-label2">Today</div></div></div>
+        <div style="padding:18px">
+          <div class="bar-chart" id="r-interest" style="height:120px;gap:4px"></div>
+          <div class="chart-x" id="r-interest-x"></div>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="ph"><div class="pt">Transaction summary</div></div>
+      <div class="tw"><table>
+        <thead><tr><th>Period</th><th>Disbursed</th><th>Returned</th><th>Interest earned</th><th>Penalty fees</th><th>Prolongation fees</th><th>Net yield</th><th>Recovery rate</th></tr></thead>
+        <tbody id="report-summary-table"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <div id="rtab-interest" class="vtab">
+    <div class="stats-grid" style="margin-bottom:18px">
+      <div class="stat-card g"><div class="stat-label">Interest today</div><div class="stat-val g" id="ri-today">TZS 6.2M</div><div class="stat-chg up">▲ vs yesterday</div></div>
+      <div class="stat-card g"><div class="stat-label">Interest this week</div><div class="stat-val g" id="ri-week">TZS 41.8M</div><div class="stat-chg up">▲ 9.2% WoW</div></div>
+      <div class="stat-card g"><div class="stat-label">Interest this month</div><div class="stat-val g" id="ri-month">TZS 186M</div><div class="stat-chg up">▲ 8.3% MoM</div></div>
+      <div class="stat-card g"><div class="stat-label">Interest this year</div><div class="stat-val g">TZS 1.84B</div><div class="stat-chg up">▲ 24% YoY</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+      <div class="panel">
+        <div class="ph"><div class="pt">Daily interest accrual (this month)</div></div>
+        <div style="padding:16px">
+          <div class="bar-chart" id="daily-interest-chart" style="height:100px;gap:2px"></div>
+          <div class="chart-x" id="daily-interest-x" style="font-size:8px"></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="ph"><div class="pt">Interest by product type</div></div>
+        <div style="padding:16px;display:flex;flex-direction:column;gap:10px" id="interest-by-product"></div>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:18px">
+      <div class="ph"><div class="pt">Interest income breakdown</div></div>
+      <div class="tw"><table>
+        <thead><tr><th>Date</th><th>Loans accruing</th><th>Principal base</th><th>Interest earned</th><th>Penalty income</th><th>Prolongation income</th><th>Total income</th></tr></thead>
+        <tbody id="interest-table"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <div id="rtab-returns" class="vtab">
+    <div class="stats-grid" style="margin-bottom:18px">
+      <div class="stat-card g"><div class="stat-label">Total recovered</div><div class="stat-val g">TZS 3.8B</div><div class="stat-chg up">91.2% recovery rate</div></div>
+      <div class="stat-card b"><div class="stat-label">Full repayments</div><div class="stat-val b">2,103</div><div class="stat-chg up">Loans closed clean</div></div>
+      <div class="stat-card a"><div class="stat-label">Partial recoveries</div><div class="stat-val a">TZS 420M</div><div class="stat-chg nt">On active arrears</div></div>
+      <div class="stat-card r"><div class="stat-label">Write-offs</div><div class="stat-val r">TZS 48M</div><div class="stat-chg dn">1.1% of portfolio</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+      <div class="panel">
+        <div class="ph"><div class="pt">Monthly recovery rate</div></div>
+        <div style="padding:16px">
+          <div class="bar-chart" id="recovery-chart" style="height:100px;gap:4px"></div>
+          <div class="chart-x"><span>Oct</span><span>Nov</span><span>Dec</span><span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="ph"><div class="pt">Repayment method split</div></div>
+        <div style="padding:16px;display:flex;flex-direction:column;gap:10px">
+          <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--muted)">Mpesa</span><span style="font-weight:600;color:var(--accent)">TZS 1.9B · 50%</span></div><div style="height:6px;background:var(--surface3);border-radius:3px"><div style="width:50%;height:100%;background:var(--accent);border-radius:3px"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--muted)">TigoPesa</span><span style="font-weight:600;color:var(--blue)">TZS 1.1B · 29%</span></div><div style="height:6px;background:var(--surface3);border-radius:3px"><div style="width:29%;height:100%;background:var(--blue);border-radius:3px"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--muted)">AirtelMoney</span><span style="font-weight:600;color:var(--purple)">TZS 800M · 21%</span></div><div style="height:6px;background:var(--surface3);border-radius:3px"><div style="width:21%;height:100%;background:var(--purple);border-radius:3px"></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="rtab-borrower" class="vtab">
+    <div class="panel">
+      <div class="ph"><div class="pt">Per-borrower P&L summary</div></div>
+      <div class="tw"><table>
+        <thead><tr><th>Borrower</th><th>Total borrowed</th><th>Total repaid</th><th>Interest paid</th><th>Penalties paid</th><th>Loans</th><th>Avg tenure</th><th>Classification</th></tr></thead>
+        <tbody id="borrower-pl-table"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <div id="rtab-product" class="vtab">
+    <div class="panel">
+      <div class="ph"><div class="pt">Performance by product</div></div>
+      <div class="tw"><table>
+        <thead><tr><th>Product</th><th>Active loans</th><th>Portfolio</th><th>Interest rate</th><th>Avg loan size</th><th>Recovery rate</th><th>Arrears %</th></tr></thead>
+        <tbody id="product-perf-table"></tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<!-- LMS CONFIG -->
+<div id="view-lms" class="view fade-in">
+  <div class="topbar">
+    <div><div class="page-title">LMS Configuration</div><div class="page-sub">All changes require Authorizer approval before going live</div></div>
+    <div class="topbar-right">
+      <button class="btn amber" onclick="showToast('Submitted for Authorizer approval','amber')">Submit for approval</button>
+      <button class="btn primary" onclick="showToast('Saved as draft','accent')">Save draft</button>
+    </div>
+  </div>
+  <div class="view-tabs">
+    <div class="vt active" onclick="switchLMSTab(this,'products')">Loan Products</div>
+    <div class="vt" onclick="switchLMSTab(this,'parameters')">Parameters</div>
+    <div class="vt" onclick="switchLMSTab(this,'collateral')">Collateral</div>
+    <div class="vt" onclick="switchLMSTab(this,'collection')">Collection Rules</div>
+    <div class="vt" onclick="switchLMSTab(this,'risk')">Risk & Limits</div>
+  </div>
+
+  <div id="lmstab-products" class="vtab active">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <div style="font-size:12px;color:var(--muted)">Define and manage loan product types</div>
+      <button class="btn primary" onclick="openModal('new-product')">+ New product</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px" id="product-cards"></div>
+  </div>
+
+  <div id="lmstab-parameters" class="vtab">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px" id="lms-params"></div>
+  </div>
+
+  <div id="lmstab-collateral" class="vtab">
+    <div style="margin-bottom:14px;display:flex;justify-content:space-between;align-items:center">
+      <div style="font-size:12px;color:var(--muted)">Configure accepted collateral types and valuation rules per product</div>
+      <button class="btn primary" onclick="openModal('new-collateral')">+ Add collateral type</button>
+    </div>
+    <div class="panel" style="margin-bottom:14px">
+      <div class="ph"><div class="pt">Collateral types</div></div>
+      <div class="tw"><table>
+        <thead><tr><th>Type</th><th>Products applicable</th><th>Max LTV</th><th>Valuation method</th><th>Required docs</th><th>Status</th></tr></thead>
+        <tbody id="collateral-table"></tbody>
+      </table></div>
+    </div>
+    <div class="panel">
+      <div class="ph"><div class="pt">Collateral policy notes</div></div>
+      <div style="padding:16px">
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px;font-size:12px;color:var(--muted);line-height:1.7">
+          For <strong style="color:var(--text)">REVOLVER</strong> (revolving credit), collateral is the employer payroll mandate — net salary deduction authority. For <strong style="color:var(--text)">Secured Advance</strong> products, physical or financial collateral is required per the table above. LTV ratios are reviewed quarterly by the Credit Risk Committee.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="lmstab-collection" class="vtab">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+      <div class="panel">
+        <div class="ph"><div class="pt">Automation triggers</div></div>
+        <div style="padding:14px" id="lms-collection-config"></div>
+      </div>
+      <div class="panel">
+        <div class="ph"><div class="pt">Stage thresholds (days)</div></div>
+        <div style="padding:16px" id="lms-collection-stages"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="lmstab-risk" class="vtab">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px" id="lms-risk"></div>
+  </div>
+</div>
+
+<!-- PORTAL USERS -->
+<div id="view-users" class="view fade-in">
+  <div class="topbar">
+    <div><div class="page-title">Portal Users</div><div class="page-sub">Role-based access — Agent, QC, Customer Care, Finance, Authorizer, Administrator</div></div>
+    <div class="topbar-right"><button class="btn primary" onclick="openModal('new-user')">+ Add user</button></div>
+  </div>
+  <div class="panel"><div class="tw"><table>
+    <thead><tr><th>User</th><th>Role</th><th>Email</th><th>Phone</th><th>Last login</th><th>Status</th><th></th></tr></thead>
+    <tbody id="users-table"></tbody>
+  </table></div></div>
+</div>
+
+<!-- AUDIT LOG -->
+<div id="view-audit" class="view fade-in">
+  <div class="topbar">
+    <div><div class="page-title">Audit Log</div><div class="page-sub">Immutable record of all user actions and system events</div></div>
+    <div class="topbar-right">
+      <select class="fs" style="padding:8px 12px" id="audit-filter" onchange="renderAudit()"><option value="">All actions</option><option value="AUTH">Auth</option><option value="LOAN">Loans</option><option value="CFG">Config</option><option value="USER">Users</option><option value="QC">QC</option></select>
+      <button class="btn" onclick="showToast('Audit log exported','accent')">⬇ Export</button>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="ph"><div class="pt">All events</div><div class="ps">Showing latest 50</div></div>
+    <div id="audit-log"></div>
+  </div>
+</div>
+
+</main>
+
+<div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modal-content"></div>
+</div>
+<div class="toast-wrap" id="toasts"></div>
+
+<script>
+const fmt=n=>new Intl.NumberFormat('sw-TZ').format(Math.round(n));
+const fmtM=n=>(n/1e6).toFixed(1)+'M';
+const sc=s=>s>=750?'var(--accent)':s>=600?'var(--blue)':s>=500?'var(--amber)':'var(--red)';
+const cb=c=>c==='Prime'?'bg':c==='High Risk'?'br':'bb';
+
+const BORROWERS=[
+  {id:1,name:'Amina Hassan',initials:'AH',color:'#00d68f',employer:'Vodacom TZ',phone:'+255712345678',netPay:1200000,score:812,limit:720000,outstanding:0,status:'good',days:0,loans:8,onTime:8,prolongations:0,channel:'WhatsApp',activity:[85,90,88,92,95,90,94],beh:{repaySpeed:92,engagement:88,consistency:95,punctuality:96,activity:82},cls:'Prime'},
+  {id:2,name:'John Mwangi',initials:'JM',color:'#3b82f6',employer:'NMB Bank',phone:'+255754123456',netPay:900000,score:671,limit:540000,outstanding:280000,status:'warning',days:15,loans:5,onTime:3,prolongations:2,channel:'USSD',activity:[70,65,72,68,55,50,48],beh:{repaySpeed:58,engagement:45,consistency:62,punctuality:55,activity:38},cls:'Standard'},
+  {id:3,name:'Grace Oloo',initials:'GO',color:'#8b5cf6',employer:'TRA Tanzania',phone:'+255765987654',netPay:2000000,score:755,limit:1200000,outstanding:500000,status:'good',days:0,loans:3,onTime:3,prolongations:0,channel:'WhatsApp',activity:[75,80,82,85,88,86,90],beh:{repaySpeed:80,engagement:85,consistency:78,punctuality:90,activity:88},cls:'Standard'},
+  {id:4,name:'Peter Kimani',initials:'PK',color:'#ef4444',employer:'Simba SC',phone:'+255723456789',netPay:700000,score:428,limit:140000,outstanding:420000,status:'critical',days:92,loans:4,onTime:1,prolongations:3,channel:'USSD',activity:[40,35,28,20,15,10,8],beh:{repaySpeed:20,engagement:15,consistency:22,punctuality:18,activity:12},cls:'High Risk'},
+  {id:5,name:'Sarah Moshi',initials:'SM',color:'#f59e0b',employer:'Azania Bank',phone:'+255734567890',netPay:1500000,score:589,limit:600000,outstanding:150000,status:'warning',days:8,loans:6,onTime:4,prolongations:2,channel:'WhatsApp',activity:[65,68,70,62,58,65,60],beh:{repaySpeed:65,engagement:70,consistency:60,punctuality:62,activity:72},cls:'Standard'},
+  {id:6,name:'David Mtui',initials:'DM',color:'#00d68f',employer:'Stanbic TZ',phone:'+255745678901',netPay:3000000,score:889,limit:1800000,outstanding:0,status:'good',days:0,loans:12,onTime:12,prolongations:0,channel:'WhatsApp',activity:[92,94,96,95,97,96,98],beh:{repaySpeed:98,engagement:95,consistency:99,punctuality:97,activity:94},cls:'Prime'},
+  {id:7,name:'Lucy Banda',initials:'LB',color:'#3b82f6',employer:'CRDB Bank',phone:'+255756789012',netPay:1100000,score:734,limit:660000,outstanding:200000,status:'good',days:0,loans:7,onTime:6,prolongations:1,channel:'WhatsApp',activity:[78,82,80,85,83,86,88],beh:{repaySpeed:82,engagement:78,consistency:80,punctuality:85,activity:76},cls:'Standard'},
+  {id:8,name:'Hassan Mwanga',initials:'HM',color:'#f59e0b',employer:'TANESCO',phone:'+255767890123',netPay:850000,score:512,limit:255000,outstanding:180000,status:'warning',days:22,loans:3,onTime:1,prolongations:2,channel:'USSD',activity:[55,50,45,42,40,38,35],beh:{repaySpeed:45,engagement:40,consistency:48,punctuality:42,activity:35},cls:'Standard'},
+];
+
+const PRODUCTS=[
+  {id:1,name:'REVOLVER',type:'Revolving Credit',minLmt:20,maxLmt:60,tenor:60,rate:0.50,penalty:0.5,prolong:10,collateral:'Payroll mandate',status:'active'},
+  {id:2,name:'SALARY ADVANCE',type:'Term Loan',minLmt:10,maxLmt:40,tenor:30,rate:0.25,penalty:0.3,prolong:8,collateral:'Payroll deduction',status:'active'},
+  {id:3,name:'DEVICE PLUS',type:'Asset Finance',minLmt:30,maxLmt:80,tenor:90,rate:0.75,penalty:0.6,prolong:12,collateral:'Device + Payroll',status:'active'},
+  {id:4,name:'EMERGENCY FUND',type:'Emergency Loan',minLmt:5,maxLmt:20,tenor:14,rate:0.83,penalty:0.8,prolong:0,collateral:'None',status:'draft'},
+];
+
+const COLLATERAL=[
+  {type:'Payroll mandate',products:'REVOLVER, SALARY ADVANCE',ltv:'100%',method:'Employer confirmation letter',docs:'Employment letter, payslip',status:'active'},
+  {type:'Mobile device (IMEI)',products:'DEVICE PLUS',ltv:'60%',method:'Market value assessment',docs:'Invoice, IMEI registration',status:'active'},
+  {type:'Bank guarantee',products:'All products',ltv:'90%',method:'Bank letter of guarantee',docs:'Bank guarantee letter',status:'active'},
+  {type:'Property charge',products:'Secured products',ltv:'70%',method:'Licensed valuer report',docs:'Title deed, valuation report',status:'inactive'},
+];
+
+const LOANS=[
+  {id:'LN-2847',borrower:'Grace Oloo',product:'REVOLVER',principal:500000,interest:31250,due:531250,dueDate:'15 May 2026',days:18,status:'good',mno:'Mpesa'},
+  {id:'LN-2846',borrower:'John Mwangi',product:'REVOLVER',principal:280000,interest:42000,due:322000,dueDate:'12 Apr 2026',days:15,status:'amber',mno:'TigoPesa'},
+  {id:'LN-2845',borrower:'Peter Kimani',product:'DEVICE PLUS',principal:420000,interest:189000,due:609000,dueDate:'25 Jan 2026',days:92,status:'red',mno:'USSD'},
+  {id:'LN-2844',borrower:'Sarah Moshi',product:'SALARY ADVANCE',principal:150000,interest:13500,due:163500,dueDate:'05 May 2026',days:8,status:'amber',mno:'Mpesa'},
+  {id:'LN-2843',borrower:'Lucy Banda',product:'REVOLVER',principal:200000,interest:12500,due:212500,dueDate:'20 May 2026',days:23,status:'good',mno:'Mpesa'},
+  {id:'LN-2842',borrower:'Hassan Mwanga',product:'REVOLVER',principal:180000,interest:39600,due:219600,dueDate:'05 Mar 2026',days:22,status:'amber',mno:'Airtel'},
+];
+
+const QC_QUEUE=[
+  {id:1,name:'Fatima Ally',employer:'Barclays TZ',netPay:950000,nida:'19920314-12345-00001-8',crb:'Pass',submitted:'25 Apr 2026'},
+  {id:2,name:'Emmanuel Nkya',employer:'Tanzania Breweries',netPay:720000,nida:'19881201-54321-00002-6',crb:'Pending',submitted:'25 Apr 2026'},
+  {id:3,name:'Rose Mbeki',employer:'Standard Chartered',netPay:1800000,nida:'19950708-98765-00003-4',crb:'Pass',submitted:'24 Apr 2026'},
+  {id:4,name:'James Omondi',employer:'Vodacom TZ',netPay:1100000,nida:'19900312-11111-00004-2',crb:'Fail',submitted:'24 Apr 2026'},
+];
+
+const USERS_DATA=[
+  {name:'Admin User',role:'Administrator',email:'admin@nipeboost.co.tz',phone:'+255700000001',login:'Today 08:12',status:'active'},
+  {name:'QC Officer 1',role:'Quality Control',email:'qc1@nipeboost.co.tz',phone:'+255700000002',login:'Today 09:01',status:'active'},
+  {name:'Agnes Mwita',role:'Agent',email:'a.mwita@nipeboost.co.tz',phone:'+255700000003',login:'Today 07:45',status:'active'},
+  {name:'Finance Lead',role:'Finance',email:'finance@nipeboost.co.tz',phone:'+255700000004',login:'Yesterday',status:'active'},
+  {name:'John Auth',role:'Authorizer',email:'auth@nipeboost.co.tz',phone:'+255700000005',login:'Today 09:30',status:'active'},
+  {name:'CC Agent',role:'Customer Care',email:'cc@nipeboost.co.tz',phone:'+255700000006',login:'Today 08:55',status:'inactive'},
+];
+
+const AUDIT_DATA=[
+  {cat:'LOAN',icon:'💸',col:'var(--blue-dim)',icol:'var(--blue)',action:'Loan disbursed',detail:'LN-2847 · Grace Oloo · TZS 500,000 via Mpesa',user:'system',time:'Today 09:14'},
+  {cat:'QC',icon:'✦',col:'var(--accent-dim)',icol:'var(--accent)',action:'Registration approved',detail:'Fatima Ally · Barclays TZ · CRB Pass',user:'QC Officer 1',time:'Today 09:01'},
+  {cat:'AUTH',icon:'🔑',col:'var(--surface2)',icol:'var(--muted)',action:'User login',detail:'Admin User · IP 196.201.x.x',user:'Admin User',time:'Today 08:12'},
+  {cat:'CFG',icon:'⚙',col:'var(--amber-dim)',icol:'var(--amber)',action:'LMS config change',detail:'REVOLVER interest rate updated 0.50% → submitted for approval',user:'Admin User',time:'Today 08:05'},
+  {cat:'LOAN',icon:'💰',col:'var(--accent-dim)',icol:'var(--accent)',action:'Full repayment received',detail:'NPB-8841 · Amina Hassan · TZS 350,000',user:'system',time:'Today 09:14'},
+  {cat:'QC',icon:'✦',col:'var(--red-dim)',icol:'var(--red)',action:'Registration declined',detail:'James Omondi · CRB Fail',user:'QC Officer 1',time:'Yesterday 16:30'},
+  {cat:'LOAN',icon:'🔄',col:'var(--amber-dim)',icol:'var(--amber)',action:'Prolongation paid',detail:'LN-2842 · John Mwangi · fee TZS 28,000',user:'system',time:'Yesterday 15:22'},
+  {cat:'USER',icon:'👤',col:'var(--purple-dim)',icol:'var(--purple)',action:'New user created',detail:'CC Agent · Customer Care role assigned',user:'Admin User',time:'Yesterday 11:00'},
+  {cat:'CFG',icon:'⚙',col:'var(--amber-dim)',icol:'var(--amber)',action:'New product created',detail:'EMERGENCY FUND · draft · 0.83% daily',user:'Admin User',time:'Yesterday 10:15'},
+  {cat:'AUTH',icon:'🔑',col:'var(--surface2)',icol:'var(--muted)',action:'PIN reset',detail:'Peter Kimani (BRW-0004) · reset by Admin',user:'Admin User',time:'26 Apr 2026 14:44'},
+  {cat:'LOAN',icon:'💸',col:'var(--blue-dim)',icol:'var(--blue)',action:'Loan disbursed',detail:'LN-2846 · David Mtui · TZS 900,000 via Mpesa',user:'system',time:'26 Apr 2026 11:20'},
+  {cat:'CFG',icon:'⚙',col:'var(--amber-dim)',icol:'var(--amber)',action:'Collateral type added',detail:'Mobile device (IMEI) · DEVICE PLUS product',user:'Admin User',time:'26 Apr 2026 09:30'},
+];
+
+let filteredBorrowers=[...BORROWERS];
+let currentPeriod='day';
+
+// ===== NAV =====
+function nav(page){
+  document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+  const map={dashboard:0,borrowers:1,loans:2,qc:3,collections:4,disbursements:5,repayments:6,insights:8,reports:9,lms:10,users:11,audit:12};
+  const items=document.querySelectorAll('.nav-item');
+  if(map[page]!==undefined&&items[map[page]])items[map[page]].classList.add('active');
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  const el=document.getElementById('view-'+page);
+  if(el){el.classList.add('active');el.classList.remove('fade-in');void el.offsetWidth;el.classList.add('fade-in');}
+  const renders={dashboard:()=>{renderDashChart();renderActivityTable();renderFeed();},borrowers:()=>renderBorrowerTable(filteredBorrowers),loans:renderLoansTable,qc:renderQC,collections:renderCollections,disbursements:renderDisbursements,repayments:renderRepayments,insights:renderInsightsBars,reports:()=>renderReports('day'),lms:renderLMS,users:renderUsers,audit:renderAudit};
+  if(renders[page])renders[page]();
+}
+
+// ===== BADGE HELPERS =====
+function statusBadge(s){return s==='good'?'<span class="badge bg">Good</span>':s==='warning'?'<span class="badge ba">Warning</span>':'<span class="badge br">Critical</span>';}
+
+// ===== SPARK =====
+function spark(arr,col){const mx=Math.max(...arr);return`<span class="spark">${arr.map(v=>`<div class="sb" style="height:${Math.round((v/mx)*16)}px;background:${col}"></div>`).join('')}</span>`;}
+
+// ===== DASHBOARD =====
+function renderDashChart(){
+  const disb=[320,380,410,460,490,520,568];
+  const ret=[290,350,380,430,460,490,530];
+  const intr=[22,26,30,34,36,40,44];
+  const mx=Math.max(...disb);
+  document.getElementById('dash-chart').innerHTML=disb.map((v,i)=>`
+    <div style="display:flex;align-items:flex-end;gap:1px;flex:1">
+      <div class="bc" style="height:${Math.round((disb[i]/mx)*90)}px;background:var(--blue);flex:1"></div>
+      <div class="bc" style="height:${Math.round((ret[i]/mx)*90)}px;background:var(--accent);flex:1"></div>
+      <div class="bc" style="height:${Math.round((intr[i]/mx)*90)*2}px;background:var(--purple);flex:1;min-height:4px"></div>
+    </div>`).join('');
+}
+function renderActivityTable(){
+  const rows=[
+    {b:'Amina Hassan',amt:'TZS 350,000',type:'Repayment',score:812,date:'Today 09:14'},
+    {b:'Grace Oloo',amt:'TZS 500,000',type:'Disbursement',score:755,date:'Today 08:52'},
+    {b:'John Mwangi',amt:'TZS 40,000',type:'Prolongation',score:671,date:'Today 08:31'},
+    {b:'David Mtui',amt:'TZS 900,000',type:'Disbursement',score:889,date:'Yesterday'},
+    {b:'Sarah Moshi',amt:'TZS 60,000',type:'Partial repay',score:589,date:'Yesterday'},
+  ];
+  document.getElementById('activity-table').innerHTML=rows.map(r=>`<tr>
+    <td style="font-weight:600">${r.b}</td><td class="tm">${r.amt}</td>
+    <td>${r.type==='Disbursement'?'<span class="badge bb">'+r.type+'</span>':r.type==='Repayment'?'<span class="badge bg">'+r.type+'</span>':'<span class="badge ba">'+r.type+'</span>'}</td>
+    <td><span style="font-size:13px;font-weight:700;color:${sc(r.score)};font-family:var(--mono)">${r.score}</span></td>
+    <td class="tm">${r.date}</td>
+  </tr>`).join('');
+}
+function renderFeed(){
+  const items=[
+    {ic:'💰',bg:'var(--accent-dim)',t:'Amina Hassan repaid TZS 350,000 in full',dt:'2 min ago'},
+    {ic:'⚠',bg:'var(--amber-dim)',t:'John Mwangi — PDD15 SMS dispatched',dt:'8 min ago'},
+    {ic:'💸',bg:'var(--blue-dim)',t:'Grace Oloo — TZS 500,000 disbursed via Mpesa',dt:'23 min ago'},
+    {ic:'🔴',bg:'var(--red-dim)',t:'Peter Kimani — 92d overdue, CRB referral queued',dt:'1 hr ago'},
+    {ic:'✅',bg:'var(--accent-dim)',t:'David Mtui — Loan #12 closed, zero balance',dt:'2 hr ago'},
+  ];
+  document.getElementById('live-feed').innerHTML=items.map(i=>`<div class="feed-item"><div class="fi-icon" style="background:${i.bg}">${i.ic}</div><div><div class="fi-title">${i.t}</div><div class="fi-time">${i.dt}</div></div></div>`).join('');
+}
+
+// ===== BORROWERS =====
+function renderBorrowerTable(list){
+  document.getElementById('borrower-table').innerHTML=list.map(b=>`
+    <tr onclick="selectBorrower(${b.id})" class="${window._selB===b.id?'sel':''}">
+      <td><div style="display:flex;align-items:center;gap:10px"><div style="width:28px;height:28px;border-radius:50%;background:${b.color};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#000;flex-shrink:0">${b.initials}</div><div><div style="font-size:13px;font-weight:600">${b.name}</div><div class="tm">${b.phone}</div></div></div></td>
+      <td style="font-size:12px">${b.employer}</td>
+      <td><span style="font-size:13px;font-weight:700;color:${sc(b.score)};font-family:var(--mono)">${b.score}</span> ${spark(b.activity,sc(b.score))}</td>
+      <td class="tm">TZS ${fmt(b.limit)}</td>
+      <td class="tm" style="color:${b.outstanding>0?'var(--amber)':'var(--muted)'}">${b.outstanding>0?'TZS '+fmt(b.outstanding):'—'}</td>
+      <td><span class="badge ${cb(b.cls)}">${b.cls}</span></td>
+      <td><span class="badge ${b.channel==='WhatsApp'?'bg':'bgr'}">${b.channel}</span></td>
+      <td class="tm" style="color:${b.days>0?'var(--red)':'var(--muted)'}">${b.days>0?b.days+'d':'—'}</td>
+    </tr>`).join('');
+}
+function filterBorrowers(q){filteredBorrowers=q?BORROWERS.filter(b=>b.name.toLowerCase().includes(q.toLowerCase())||b.employer.toLowerCase().includes(q.toLowerCase())||b.phone.includes(q)):BORROWERS;renderBorrowerTable(filteredBorrowers);}
+function filterByStatus(s){filteredBorrowers=s?BORROWERS.filter(b=>b.status===s):BORROWERS;renderBorrowerTable(filteredBorrowers);}
+function filterByClass(c){filteredBorrowers=c?BORROWERS.filter(b=>b.cls===c):BORROWERS;renderBorrowerTable(filteredBorrowers);}
+
+function selectBorrower(id){
+  window._selB=id;
+  const b=BORROWERS.find(x=>x.id===id);
+  renderBorrowerTable(filteredBorrowers);
+  document.getElementById('b-placeholder').style.display='none';
+  const det=document.getElementById('borrower-detail');det.style.display='block';
+  const rp=Math.round((b.onTime/b.loans)*100);
+  const nd=Math.round(((b.score-300)/700)*100);
+  const behLabels={repaySpeed:'Repay speed',engagement:'WA engagement',consistency:'Consistency',punctuality:'Punctuality',activity:'Channel activity'};
+  const behBars=Object.entries(b.beh).map(([k,v])=>`<div class="bh-bar"><div class="bh-top"><span class="bh-lbl">${behLabels[k]}</span><span class="bh-val" style="color:${v>=75?'var(--accent)':v>=55?'var(--amber)':'var(--red)'}">${v}</span></div><div class="bh-track"><div class="bh-fill" style="width:${v}%;background:${v>=75?'var(--accent)':v>=55?'var(--amber)':'var(--red)'}"></div></div></div>`).join('');
+  const ins=b.score>=800?`Model borrower — ${b.loans} loans, all on time. Engagement trend rising. Recommend limit review.`:b.score>=700?`Solid profile. ${b.prolongations} prolongation(s) but all cleared. Hold limit — review at 12mo.`:b.score>=600?`Moderate risk. ${b.prolongations} prolongation(s) and declining engagement. Do not increase limit.`:`Elevated risk — ${b.days} days in arrears. Channel activity near zero. Immediate escalation required.`;
+  det.innerHTML=`
+    <div style="padding:16px;border-bottom:1px solid var(--border)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <div style="width:42px;height:42px;border-radius:50%;background:${b.color};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#000;flex-shrink:0">${b.initials}</div>
+        <div><div style="font-size:15px;font-weight:800">${b.name}</div><div style="font-size:11px;color:var(--muted)">${b.employer} · ${b.phone}</div>
+        <div style="display:flex;gap:5px;margin-top:5px"><span class="badge ${cb(b.cls)}">${b.cls}</span>${statusBadge(b.status)}<span class="badge ${b.channel==='WhatsApp'?'bg':'bgr'}">${b.channel}</span></div></div>
+      </div>
+      <div class="cs-big">
+        <div class="cs-num" style="color:${sc(b.score)}">${b.score}</div>
+        <div class="cs-lbl" style="color:${sc(b.score)}">${b.cls} · Credit Score</div>
+      </div>
+      <div class="cs-bar"><div class="cs-needle" style="left:${nd}%"></div></div>
+      <div class="cs-range"><span>300</span><span>Poor</span><span>Good</span><span>Excellent</span><span>1000</span></div>
+    </div>
+    <div class="mm-grid">
+      <div class="mm"><div class="mm-val" style="color:var(--blue)">TZS ${fmt(b.limit)}</div><div class="mm-lbl">Limit</div></div>
+      <div class="mm"><div class="mm-val" style="color:${b.outstanding>0?'var(--amber)':'var(--accent)'}">TZS ${fmt(b.outstanding)}</div><div class="mm-lbl">Outstanding</div></div>
+      <div class="mm"><div class="mm-val">${rp}%</div><div class="mm-lbl">On-time</div></div>
+      <div class="mm"><div class="mm-val">${b.loans}</div><div class="mm-lbl">Loans</div></div>
+      <div class="mm"><div class="mm-val" style="color:${b.prolongations>1?'var(--amber)':'var(--text)'}">${b.prolongations}</div><div class="mm-lbl">Prolongations</div></div>
+      <div class="mm"><div class="mm-val">TZS ${fmt(b.netPay)}</div><div class="mm-lbl">Net pay</div></div>
+    </div>
+    <div style="padding:14px;border-top:1px solid var(--border)">
+      <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-family:var(--mono);margin-bottom:10px">Behaviour dimensions</div>
+      ${behBars}
+    </div>
+    <div style="padding:0 14px 14px">
+      <div class="insight-box">
+        <div class="insight-label">◈ Profile signal</div>
+        <div class="insight-text">${ins}</div>
+      </div>
+    </div>
+    <div style="padding:14px;border-top:1px solid var(--border)">
+      <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-family:var(--mono);margin-bottom:8px">Recent activity</div>
+      ${b.loans>=1?`<div class="tl-row"><div class="tl-dot" style="background:var(--accent)"></div><div class="tl-txt">Loan #${b.loans} — ${b.outstanding>0?b.days+'d overdue':'Cleared'}</div><div class="tl-dt">Latest</div></div>`:''}
+      ${b.prolongations>0?`<div class="tl-row"><div class="tl-dot" style="background:var(--amber)"></div><div class="tl-txt">Prolongation paid</div><div class="tl-dt">72d ago</div></div>`:''}
+      ${b.loans>=2?`<div class="tl-row"><div class="tl-dot" style="background:${b.onTime>=b.loans-1?'var(--accent)':'var(--amber)'}"></div><div class="tl-txt">Loan #${b.loans-1} — ${b.onTime>=b.loans-1?'On time':'Late'}</div><div class="tl-dt">45d ago</div></div>`:''}
+    </div>
+    <div style="padding:12px 14px;border-top:1px solid var(--border);display:flex;gap:8px">
+      ${b.outstanding>0?`<button class="btn danger" style="flex:1" onclick="showToast('Escalation initiated for ${b.name}','red')">Escalate</button>`:`<button class="btn" style="flex:1" onclick="showToast('Limit review submitted','amber')">Review limit</button>`}
+      <button class="btn primary" style="flex:1" onclick="showToast('Full report generated','accent')">Full report</button>
+    </div>`;
+}
+
+// ===== LOANS =====
+function renderLoansTable(){
+  document.getElementById('loans-table').innerHTML=LOANS.map(l=>`<tr>
+    <td class="tm">${l.id}</td>
+    <td style="font-weight:600">${l.borrower}</td>
+    <td><span class="badge bgr">${l.product}</span></td>
+    <td class="tm">TZS ${fmt(l.principal)}</td>
+    <td class="tm">TZS ${fmt(l.interest)}</td>
+    <td class="tm" style="font-weight:600">TZS ${fmt(l.due)}</td>
+    <td class="tm">${l.dueDate}</td>
+    <td class="tm" style="color:${l.days>30?'var(--red)':l.days>0?'var(--amber)':'var(--muted)'}">${l.days>0?l.days+'d overdue':'Current'}</td>
+    <td>${l.status==='good'?'<span class="badge bg">Active</span>':l.status==='amber'?'<span class="badge ba">Overdue</span>':'<span class="badge br">Critical</span>'}</td>
+    <td><span class="badge bgr">${l.mno}</span></td>
+  </tr>`).join('');
+}
+
+// ===== QC =====
+function renderQC(){
+  document.getElementById('qc-list').innerHTML=QC_QUEUE.map(q=>`
+    <div style="padding:14px 16px;border-bottom:1px solid rgba(30,45,66,0.4);cursor:pointer;transition:background 0.1s" onmouseover="this.style.background='rgba(255,255,255,0.01)'" onmouseout="this.style.background=''" onclick="selectQC(${q.id})">
+      <div style="font-size:13px;font-weight:600">${q.name}</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px">${q.employer} · Submitted ${q.submitted}</div>
+      <div style="display:flex;gap:6px;margin-top:7px">
+        <span class="badge ba">Pending</span>
+        <span class="badge ${q.crb==='Pass'?'bg':q.crb==='Fail'?'br':'bgr'}">CRB: ${q.crb}</span>
+      </div>
+    </div>`).join('');
+}
+function selectQC(id){
+  const q=QC_QUEUE.find(x=>x.id===id);
+  const lim=Math.round(q.netPay*0.20);
+  document.getElementById('qc-detail').innerHTML=`
+    <div style="padding:16px;border-bottom:1px solid var(--border)">
+      <div style="font-size:15px;font-weight:800;margin-bottom:2px">${q.name}</div>
+      <div style="font-size:12px;color:var(--muted)">${q.employer}</div>
+    </div>
+    <div style="padding:16px;display:flex;flex-direction:column;gap:0">
+      ${[['Net pay','TZS '+fmt(q.netPay)],['Proposed limit (20%)','TZS '+fmt(lim)],['NIDA',q.nida],['CRB status',q.crb],['Submitted',q.submitted]].map(r=>`<div style="display:flex;justify-content:space-between;font-size:12px;padding:7px 0;border-bottom:1px solid rgba(30,45,66,0.4)"><span style="color:var(--muted)">${r[0]}</span><span style="font-weight:600;font-family:var(--mono)">${r[1]}</span></div>`).join('')}
+    </div>
+    ${q.crb==='Fail'?`<div style="margin:0 16px"><div class="insight-box" style="background:var(--red-dim);border-color:var(--red-border)"><div class="insight-label" style="color:var(--red)">⚠ CRB adverse record</div><div class="insight-text">This applicant has an adverse CRB record. Approval is not recommended. Obtain full bureau report before proceeding.</div></div></div>`:''}
+    <div style="padding:14px 16px;display:flex;gap:8px;margin-top:4px">
+      ${q.crb!=='Fail'?`<button class="btn primary" style="flex:1" onclick="showToast('${q.name} approved — registration SMS sent','accent')">Approve</button>`:''}
+      <button class="btn danger" style="flex:1" onclick="showToast('${q.name} declined','red')">Decline</button>
+    </div>`;
+}
+
+// ===== COLLECTIONS =====
+function renderCollections(){
+  const c=BORROWERS.filter(b=>b.days>0);
+  document.getElementById('collections-table').innerHTML=c.map(b=>{
+    const stage=b.days>90?'<span class="badge br">PDD3 90+</span>':b.days>30?'<span class="badge br">PDD2</span>':b.days>7?'<span class="badge ba">PDD1</span>':'<span class="badge ba">BDD</span>';
+    return`<tr><td><div style="font-weight:600">${b.name}</div><div class="tm">${b.employer}</div></td>
+      <td class="tm" style="color:var(--red)">TZS ${fmt(b.outstanding)}</td>
+      <td class="tm" style="color:${b.days>30?'var(--red)':'var(--amber)'}">${b.days}d</td>
+      <td>${stage}</td>
+      <td class="tm">Auto-SMS</td>
+      <td><button class="btn" style="padding:4px 10px;font-size:11px" onclick="showToast('WhatsApp sent to ${b.name}','blue')">Contact</button></td>
+    </tr>`;}).join('');
+}
+
+// ===== DISBURSEMENTS =====
+function renderDisbursements(){
+  const d=[
+    {id:'TXN-9841',b:'Grace Oloo',prod:'REVOLVER',amt:500000,mno:'Mpesa',st:'success',t:'08:52'},
+    {id:'TXN-9840',b:'Lucy Banda',prod:'REVOLVER',amt:200000,mno:'TigoPesa',st:'success',t:'08:31'},
+    {id:'TXN-9839',b:'David Mtui',prod:'SALARY ADVANCE',amt:900000,mno:'Mpesa',st:'success',t:'07:14'},
+    {id:'TXN-9838',b:'Sarah Moshi',prod:'REVOLVER',amt:300000,mno:'Airtel',st:'pending',t:'06:55'},
+    {id:'TXN-9837',b:'Hassan Mwanga',prod:'DEVICE PLUS',amt:120000,mno:'USSD',st:'failed',t:'06:10'},
+  ];
+  document.getElementById('disbursement-table').innerHTML=d.map(x=>`<tr>
+    <td class="tm">${x.id}</td><td style="font-weight:600">${x.b}</td>
+    <td><span class="badge bgr">${x.prod}</span></td>
+    <td class="tm" style="font-weight:600">TZS ${fmt(x.amt)}</td>
+    <td><span class="badge bgr">${x.mno}</span></td>
+    <td>${x.st==='success'?'<span class="badge bg">Success</span>':x.st==='pending'?'<span class="badge ba">Pending</span>':'<span class="badge br">Failed</span>'}</td>
+    <td class="tm">Today ${x.t}</td>
+  </tr>`).join('');
+}
+
+// ===== REPAYMENTS =====
+function renderRepayments(){
+  const r=[
+    {ref:'NPB-8841',b:'Amina Hassan',paid:350000,bal:0,mno:'Mpesa',type:'Full',date:'Today 09:14'},
+    {ref:'NPB-8840',b:'John Mwangi',paid:40000,bal:240000,mno:'TigoPesa',type:'Partial',date:'Today 08:55'},
+    {ref:'NPB-8839',b:'Sarah Moshi',paid:60000,bal:90000,mno:'Mpesa',type:'Partial',date:'Yesterday'},
+    {ref:'NPB-8838',b:'Lucy Banda',paid:212500,bal:0,mno:'Mpesa',type:'Full',date:'Yesterday'},
+    {ref:'NPB-8837',b:'David Mtui',paid:28000,bal:0,mno:'Mpesa',type:'Prolongation',date:'Yesterday'},
+  ];
+  document.getElementById('repayment-table').innerHTML=r.map(x=>`<tr>
+    <td class="tm">${x.ref}</td><td style="font-weight:600">${x.b}</td>
+    <td class="tm" style="color:var(--accent);font-weight:700">TZS ${fmt(x.paid)}</td>
+    <td class="tm" style="color:${x.bal===0?'var(--muted)':'var(--amber)'}">${x.bal===0?'Cleared':'TZS '+fmt(x.bal)}</td>
+    <td><span class="badge bgr">${x.mno}</span></td>
+    <td>${x.type==='Full'?'<span class="badge bg">Full</span>':x.type==='Prolongation'?'<span class="badge bp">Prolongation</span>':'<span class="badge ba">Partial</span>'}</td>
+    <td class="tm">${x.date}</td>
+  </tr>`).join('');
+}
+
+// ===== INSIGHTS =====
+function renderInsightsBars(){
+  const dims=[{l:'Repayment speed',v:72},{l:'WA engagement',v:68},{l:'Consistency',v:74},{l:'Punctuality',v:70},{l:'Channel activity',v:65},{l:'CRB (normalised)',v:78}];
+  document.getElementById('insights-bars').innerHTML=dims.map(d=>`
+    <div class="bh-bar" style="margin-bottom:12px">
+      <div class="bh-top"><span class="bh-lbl">${d.l}</span><span class="bh-val" style="color:${d.v>=75?'var(--accent)':d.v>=60?'var(--blue)':'var(--amber)'}">${d.v}/100</span></div>
+      <div class="bh-track" style="height:6px"><div class="bh-fill" style="width:${d.v}%;background:${d.v>=75?'var(--accent)':d.v>=60?'var(--blue)':'var(--amber)'}"></div></div>
+    </div>`).join('');
+}
+
+// ===== REPORTS =====
+const PERIOD_DATA={
+  day:{label:'Today',disb:[142],ret:[98],intr:[6.2],xLabels:['Today'],kpis:[142,98,6.2,5.1]},
+  week:{label:'This week',disb:[95,112,88,134,142,109,121],ret:[82,98,75,118,98,94,108],intr:[4.1,4.8,3.9,5.7,6.2,4.9,5.3],xLabels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],kpis:[801,673,34.9,28.4]},
+  month:{label:'April 2026',disb:[320,380,410,460,490,520,568],ret:[290,350,380,430,460,490,530],intr:[22,26,30,34,36,40,44],xLabels:['Oct','Nov','Dec','Jan','Feb','Mar','Apr'],kpis:[3628,3340,232,189]},
+  quarter:{label:'Q2 2026',disb:[1200,1380,1568],ret:[1080,1260,1420],intr:[78,92,112],xLabels:['Feb','Mar','Apr'],kpis:[4148,3760,282,228]},
+  year:{label:'2026 YTD',disb:[980,1100,1240,1568],ret:[890,1010,1140,1420],intr:[62,72,86,112],xLabels:['Jan','Feb','Mar','Apr'],kpis:[4888,4460,332,268]},
+};
+function setPeriod(el,p){
+  document.querySelectorAll('.period-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');currentPeriod=p;renderReports(p);
+}
+function renderReports(p){
+  const d=PERIOD_DATA[p];
+  const mx=Math.max(...d.disb,...d.ret);
+  document.querySelectorAll('#r-period-label,#r-period-label2').forEach(el=>{if(el)el.textContent=d.label;});
+  // KPI cards
+  const kpiDefs=[{l:'Total disbursed',v:'TZS '+fmtM(d.kpis[0])+'M',col:'g'},{l:'Total returned',v:'TZS '+fmtM(d.kpis[1])+'M',col:'b'},{l:'Interest earned',v:'TZS '+fmtM(d.kpis[2])+'M',col:'g'},{l:'Prolongation fees',v:'TZS '+fmtM(d.kpis[3])+'M',col:'p'}];
+  document.getElementById('report-kpis').innerHTML=kpiDefs.map(k=>`<div class="stat-card ${k.col}"><div class="stat-label">${k.l}</div><div class="stat-val ${k.col}">${k.v}</div></div>`).join('');
+  // Disb vs ret chart
+  document.getElementById('r-disbvret').innerHTML=d.disb.map((v,i)=>`<div style="display:flex;align-items:flex-end;gap:1px;flex:1"><div class="bc" style="height:${Math.round((d.disb[i]/mx)*110)}px;background:var(--blue);flex:1"></div><div class="bc" style="height:${Math.round((d.ret[i]/mx)*110)}px;background:var(--accent);flex:1"></div></div>`).join('');
+  document.getElementById('r-disbvret-x').innerHTML=d.xLabels.map(x=>`<span>${x}</span>`).join('');
+  // Interest chart
+  const mxi=Math.max(...d.intr);
+  document.getElementById('r-interest').innerHTML=d.intr.map((v,i)=>`<div class="bc" style="height:${Math.round((v/mxi)*110)}px;background:var(--purple);flex:1"></div>`).join('');
+  document.getElementById('r-interest-x').innerHTML=d.xLabels.map(x=>`<span>${x}</span>`).join('');
+  // Summary table
+  document.getElementById('report-summary-table').innerHTML=d.xLabels.map((lbl,i)=>`<tr>
+    <td class="tm">${lbl}</td>
+    <td class="tm" style="color:var(--blue)">TZS ${fmtM(d.disb[i])}M</td>
+    <td class="tm" style="color:var(--accent)">TZS ${fmtM(d.ret[i])}M</td>
+    <td class="tm" style="color:var(--accent);font-weight:700">TZS ${fmtM(d.intr[i])}M</td>
+    <td class="tm" style="color:var(--amber)">TZS ${fmtM(d.intr[i]*0.12)}M</td>
+    <td class="tm" style="color:var(--purple)">TZS ${fmtM(d.intr[i]*0.08)}M</td>
+    <td class="tm" style="color:var(--accent)">TZS ${fmtM(d.intr[i]*1.2)}M</td>
+    <td class="tm" style="color:${d.ret[i]/d.disb[i]>=0.9?'var(--accent)':'var(--amber)'}"><strong>${Math.round((d.ret[i]/d.disb[i])*100)}%</strong></td>
+  </tr>`).join('');
+  renderInterestTab();renderReturnsChart();renderBorrowerPL();renderProductPerf();
+}
+function renderInterestTab(){
+  const days=Array.from({length:27},(_, i)=>i+1);
+  const vals=days.map(d=>Math.round(4.8+Math.sin(d/3)*1.4+Math.random()*0.8));
+  const mx=Math.max(...vals);
+  document.getElementById('daily-interest-chart').innerHTML=vals.map(v=>`<div class="bc" style="height:${Math.round((v/mx)*90)}px;background:var(--accent);flex:1;opacity:0.8"></div>`).join('');
+  document.getElementById('daily-interest-x').innerHTML=days.filter((_,i)=>i%4===0).map(d=>`<span>${d}</span>`).join('');
+  document.getElementById('interest-by-product').innerHTML=PRODUCTS.filter(p=>p.status==='active').map(p=>`
+    <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--muted)">${p.name}</span><span style="font-weight:700;color:var(--accent)">${p.rate}% daily</span></div>
+    <div style="height:5px;background:var(--surface3);border-radius:3px"><div style="width:${Math.round((p.rate/0.83)*100)}%;height:100%;background:var(--accent);border-radius:3px"></div></div></div>`).join('');
+  document.getElementById('interest-table').innerHTML=Array.from({length:7},(_, i)=>{
+    const d=new Date(2026,3,27-i);
+    const lbl=d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'});
+    const princ=4100+i*22;const intr=(6.2-i*0.1).toFixed(1);const pen=(0.4+i*0.05).toFixed(1);const prolong=(0.3+i*0.03).toFixed(1);
+    return`<tr><td class="tm">${lbl}</td><td class="tm">${2847-i*12}</td><td class="tm">TZS ${princ}M</td><td class="tm" style="color:var(--accent);font-weight:700">TZS ${intr}M</td><td class="tm" style="color:var(--amber)">TZS ${pen}M</td><td class="tm" style="color:var(--purple)">TZS ${prolong}M</td><td class="tm" style="font-weight:700">TZS ${(parseFloat(intr)+parseFloat(pen)+parseFloat(prolong)).toFixed(1)}M</td></tr>`;
+  }).join('');
+}
+function renderReturnsChart(){
+  const vals=[91.2,90.8,92.1,88.4,93.0,91.7,94.3];
+  const mx=100;
+  document.getElementById('recovery-chart').innerHTML=vals.map((v,i)=>`<div class="bc" style="height:${Math.round((v/mx)*90)}px;background:${v>=90?'var(--accent)':'var(--amber)'};flex:1" title="${v}%"></div>`).join('');
+}
+function renderBorrowerPL(){
+  document.getElementById('borrower-pl-table').innerHTML=BORROWERS.slice(0,6).map(b=>`<tr>
+    <td style="font-weight:600">${b.name}</td>
+    <td class="tm">TZS ${fmt(b.limit*b.loans*0.5)}</td>
+    <td class="tm" style="color:var(--accent)">TZS ${fmt(b.limit*b.loans*0.47)}</td>
+    <td class="tm" style="color:var(--accent)">TZS ${fmt(b.limit*b.loans*0.045)}</td>
+    <td class="tm" style="color:var(--amber)">TZS ${fmt(b.prolongations*b.limit*0.08)}</td>
+    <td class="tm">${b.loans}</td>
+    <td class="tm">${30+Math.round(b.score/100)}d</td>
+    <td><span class="badge ${cb(b.cls)}">${b.cls}</span></td>
+  </tr>`).join('');
+}
+function renderProductPerf(){
+  document.getElementById('product-perf-table').innerHTML=PRODUCTS.map(p=>`<tr>
+    <td style="font-weight:600">${p.name} <span class="badge ${p.status==='active'?'bg':'bgr'}" style="margin-left:4px">${p.status}</span></td>
+    <td class="tm">${p.status==='active'?Math.round(2847*0.3)+' active':'—'}</td>
+    <td class="tm" style="color:var(--blue)">TZS ${p.status==='active'?fmtM(p.maxLmt*2847*0.3*0.01)+'M':'—'}</td>
+    <td class="tm" style="color:var(--accent)">${p.rate}% / day</td>
+    <td class="tm">TZS ${fmt(p.maxLmt*8000)}</td>
+    <td class="tm" style="color:var(--accent)">${p.status==='active'?'91.2%':'—'}</td>
+    <td class="tm" style="color:${p.status==='active'?'var(--amber)':'var(--muted)'}">5.7%</td>
+  </tr>`).join('');
+}
+function switchReportTab(el,id){
+  document.querySelectorAll('.view-tabs .vt').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('#view-reports .vtab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('rtab-'+id).classList.add('active');
+}
+
+// ===== LMS CONFIG =====
+function renderLMS(){
+  renderProductCards();renderLMSParams();renderCollateralTable();renderCollectionConfig();renderRiskConfig();
+}
+function renderProductCards(){
+  document.getElementById('product-cards').innerHTML=PRODUCTS.map(p=>`
+    <div class="prod-card ${p.status==='active'?'active-prod':''}" onclick="openProductEdit(${p.id})">
+      <div class="prod-card-badge"><span class="badge ${p.status==='active'?'bg':'bgr'}">${p.status}</span></div>
+      <div class="prod-name">${p.name}</div>
+      <div class="prod-type">${p.type}</div>
+      <div class="prod-params">
+        <div class="prod-param"><span>Loan limit</span><span>${p.minLmt}%–${p.maxLmt}% net pay</span></div>
+        <div class="prod-param"><span>Tenor</span><span>${p.tenor} days</span></div>
+        <div class="prod-param"><span>Interest rate</span><span>${p.rate}% / day</span></div>
+        <div class="prod-param"><span>Penalty</span><span>${p.penalty}% / day</span></div>
+        <div class="prod-param"><span>Prolongation fee</span><span>${p.prolong}%</span></div>
+        <div class="prod-param"><span>Collateral</span><span>${p.collateral}</span></div>
+      </div>
+    </div>`).join('');
+}
+function openProductEdit(id){const p=PRODUCTS.find(x=>x.id===id);openModal('edit-product',p);}
+function renderLMSParams(){
+  const params=[
+    {l:'Min loan limit (% net pay)',k:'minlmt',min:5,max:30,step:5,v:20,unit:'%'},
+    {l:'Max loan limit (% net pay)',k:'maxlmt',min:30,max:80,step:5,v:60,unit:'%'},
+    {l:'Daily interest rate',k:'rate',min:25,max:83,step:1,v:50,unit:'%',div:100},
+    {l:'Loan tenure (days)',k:'tenure',min:14,max:90,step:7,v:60,unit:' days'},
+    {l:'Daily penalty rate',k:'pen',min:25,max:100,step:5,v:50,unit:'%',div:100},
+    {l:'Prolongation fee',k:'prolong',min:5,max:20,step:1,v:10,unit:'%'},
+  ];
+  document.getElementById('lms-params').innerHTML=`
+    <div class="panel"><div class="ph"><div class="pt">Product defaults</div><div class="ps">Applied as base values when creating new products</div></div>
+    <div style="padding:16px"><div class="cfg-grid">${params.map(p=>`
+      <div class="cfg-item"><label>${p.l}</label>
+      <div class="cfg-val" id="lp-${p.k}">${p.div?(p.v/100).toFixed(2)+p.unit:p.v+p.unit}</div>
+      <input type="range" min="${p.min}" max="${p.max}" step="${p.step}" value="${p.v}" oninput="document.getElementById('lp-${p.k}').textContent=${p.div?`(this.value/100).toFixed(2)+'${p.unit}'`:`this.value+'${p.unit}'`}">
+      </div>`).join('')}</div></div></div>
+    <div class="panel"><div class="ph"><div class="pt">Global settings</div></div>
+    <div style="padding:16px;display:flex;flex-direction:column;gap:0">
+      ${[['Minimum loan amount (TZS)','5,000'],['Currency','TZS'],['Max active loans per borrower','1'],['CRB check required','Yes'],['T&C acceptance required','Yes'],['Default communication channel','WhatsApp']].map(r=>`
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(30,45,66,0.4)">
+        <span style="font-size:12px;color:var(--muted)">${r[0]}</span>
+        <input class="mi" style="width:140px;text-align:right;padding:5px 8px" value="${r[1]}">
+      </div>`).join('')}
+    </div></div>`;
+}
+function renderCollateralTable(){
+  document.getElementById('collateral-table').innerHTML=COLLATERAL.map(c=>`<tr>
+    <td style="font-weight:600">${c.type}</td>
+    <td style="font-size:12px">${c.products}</td>
+    <td class="tm" style="color:var(--accent)">${c.ltv}</td>
+    <td style="font-size:12px">${c.method}</td>
+    <td style="font-size:11px;color:var(--muted)">${c.docs}</td>
+    <td><span class="badge ${c.status==='active'?'bg':'bgr'}">${c.status}</span></td>
+  </tr>`).join('');
+}
+function renderCollectionConfig(){
+  const togs=[
+    {l:'Auto-SMS at BDD 4,3,2,1 days',s:'Repayment reminders before due date',on:true},
+    {l:'WhatsApp reminder on Due Date',s:'Interactive payment prompt',on:true},
+    {l:'Escalation recommendation at PDD30',s:'Flag for CC team action',on:true},
+    {l:'CRB listing at PDD120',s:'Requires Authorizer approval',on:false},
+    {l:'Direct debit mandate enforcement',s:'Trigger payroll deduction via NMB',on:false},
+    {l:'Limit increase for Prime borrowers',s:'Auto-approve based on score',on:true},
+  ];
+  document.getElementById('lms-collection-config').innerHTML=togs.map((t,i)=>`
+    <div class="tog-row"><div><div class="tog-lbl">${t.l}</div><div class="tog-sub">${t.s}</div></div>
+    <div class="tog ${t.on?'on':''}" id="ct-${i}" onclick="this.classList.toggle('on')"></div></div>`).join('');
+  const stages=[
+    {l:'BDD trigger (days before due)',k:'bdd',v:4},
+    {l:'PDD1 soft collection (days)',k:'pdd1',v:30},
+    {l:'PDD2 hard collection (days)',k:'pdd2',v:90},
+    {l:'PDD3 CRB referral (days)',k:'pdd3',v:120},
+  ];
+  document.getElementById('lms-collection-stages').innerHTML=stages.map(s=>`
+    <div class="cfg-item" style="margin-bottom:10px"><label>${s.l}</label>
+    <div class="cfg-val" id="cs-${s.k}">${s.v} days</div>
+    <input type="range" min="1" max="180" step="1" value="${s.v}" oninput="document.getElementById('cs-${s.k}').textContent=this.value+' days'">
+    </div>`).join('');
+}
+function renderRiskConfig(){
+  document.getElementById('lms-risk').innerHTML=`
+    <div class="panel"><div class="ph"><div class="pt">Portfolio allocation</div></div>
+    <div style="padding:16px">
+      <div class="cfg-item" style="margin-bottom:10px"><label>Low-risk allocation (% of portfolio)</label>
+      <div class="cfg-val" id="rk-low">80%</div>
+      <input type="range" min="50" max="95" step="5" value="80" oninput="document.getElementById('rk-low').textContent=this.value+'%';document.getElementById('rk-high').textContent=(100-this.value)+'%'"></div>
+      <div class="cfg-item"><label>High-risk allocation (computed)</label>
+      <div class="cfg-val" id="rk-high" style="color:var(--red)">20%</div>
+      <div class="cfg-hint">Automatically derived from low-risk allocation</div></div>
+    </div></div>
+    <div class="panel"><div class="ph"><div class="pt">Scoring weights</div><div class="ps">Adjusts the credit classification formula</div></div>
+    <div style="padding:16px">
+    ${[['Repayment history weight',35],['Tenure & activity weight',20],['CRB score weight',25],['Salary stability weight',15],['Channel engagement weight',5]].map(([l,v])=>`
+      <div class="cfg-item" style="margin-bottom:10px"><label>${l}</label>
+      <div class="cfg-val">${v}%</div>
+      <input type="range" min="0" max="50" step="5" value="${v}">
+      </div>`).join('')}
+    </div></div>`;
+}
+function switchLMSTab(el,id){
+  document.querySelectorAll('.view-tabs .vt').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('#view-lms .vtab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('lmstab-'+id).classList.add('active');
+}
+
+// ===== USERS =====
+function renderUsers(){
+  document.getElementById('users-table').innerHTML=USERS_DATA.map(u=>`<tr>
+    <td><div style="font-weight:600">${u.name}</div></td>
+    <td><span class="badge bgr">${u.role}</span></td>
+    <td class="tm">${u.email}</td>
+    <td class="tm">${u.phone}</td>
+    <td class="tm">${u.login}</td>
+    <td><span class="badge ${u.status==='active'?'bg':'br'}">${u.status}</span></td>
+    <td><button class="btn" style="padding:4px 10px;font-size:11px" onclick="showToast('User settings opened','accent')">Edit</button></td>
+  </tr>`).join('');
+}
+
+// ===== AUDIT =====
+function renderAudit(){
+  const filter=document.getElementById('audit-filter')?.value||'';
+  const list=filter?AUDIT_DATA.filter(a=>a.cat===filter):AUDIT_DATA;
+  document.getElementById('audit-log').innerHTML=list.map(a=>`
+    <div class="audit-row">
+      <div class="audit-icon" style="background:${a.col};color:${a.icol}">${a.icon}</div>
+      <div style="flex:1">
+        <div class="audit-action">${a.action}</div>
+        <div class="audit-detail">${a.detail}</div>
+      </div>
+      <div class="audit-meta">
+        <div style="color:var(--muted)">${a.user}</div>
+        <div>${a.time}</div>
+        <span class="badge bgr" style="font-size:9px;margin-top:3px">${a.cat}</span>
+      </div>
+    </div>`).join('');
+}
+
+// ===== MODALS =====
+const MODAL_DEFS={
+  'new-borrower':{title:'Register new borrower',sub:'Client employment details — submitted to QC on save',fields:[{l:'Full name',t:'text',ph:'e.g. Fatima Ally'},{l:'Employer',t:'text',ph:'e.g. Vodacom TZ'},{l:'Net pay (TZS)',t:'number',ph:'e.g. 1200000'},{l:'Phone',t:'tel',ph:'+255 7XX XXX XXX'},{l:'NIDA',t:'text',ph:'XXXXXXXXXXXXXXXX'},{l:'Contract type',t:'select',opts:['Permanent','Fixed term','Contract']},{l:'Loan product',t:'select',opts:['REVOLVER','SALARY ADVANCE','DEVICE PLUS']}],action:'Submit to QC'},
+  'manual-repayment':{title:'Manual repayment posting',sub:'Use when MNO confirms payment not reflected',fields:[{l:'Borrower reference',t:'text',ph:'NPB-XXXX'},{l:'Amount paid (TZS)',t:'number',ph:'e.g. 250000'},{l:'MNO transaction ID',t:'text',ph:'MNO reference'},{l:'Payment date',t:'date'},{l:'MNO',t:'select',opts:['Mpesa','TigoPesa','AirtelMoney']}],action:'Submit for Authorizer approval'},
+  'new-user':{title:'Add portal user',sub:'Assign role and access level',fields:[{l:'Full name',t:'text',ph:'Full name'},{l:'Email',t:'email',ph:'user@company.com'},{l:'Phone',t:'tel',ph:'+255 7XX XXX XXX'},{l:'Role',t:'select',opts:['Agent','Quality Control','Customer Care','Finance','Authorizer']}],action:'Create user'},
+  'new-product':{title:'New loan product',sub:'Define parameters — requires Authorizer approval to activate',fields:[{l:'Product name',t:'text',ph:'e.g. EMERGENCY FUND'},{l:'Product type',t:'select',opts:['Revolving Credit','Term Loan','Asset Finance','Emergency Loan']},{l:'Min limit (% net pay)',t:'number',ph:'e.g. 10'},{l:'Max limit (% net pay)',t:'number',ph:'e.g. 60'},{l:'Tenor (days)',t:'number',ph:'e.g. 60'},{l:'Daily interest rate (%)',t:'number',ph:'e.g. 0.50'},{l:'Daily penalty rate (%)',t:'number',ph:'e.g. 0.50'},{l:'Prolongation fee (%)',t:'number',ph:'e.g. 10'},{l:'Collateral type',t:'select',opts:['Payroll mandate','Mobile device + Payroll','Bank guarantee','None']},{l:'Description',t:'textarea',ph:'Brief product description'}],action:'Save as draft'},
+  'new-collateral':{title:'Add collateral type',sub:'Configure accepted collateral and valuation rules',fields:[{l:'Collateral type name',t:'text',ph:'e.g. Vehicle logbook'},{l:'Applicable products',t:'text',ph:'e.g. REVOLVER, DEVICE PLUS'},{l:'Maximum LTV (%)',t:'number',ph:'e.g. 70'},{l:'Valuation method',t:'text',ph:'e.g. Licensed valuer'},{l:'Required documents',t:'textarea',ph:'List required documents'}],action:'Add collateral type'},
+};
+function openModal(key,data){
+  let cfg=MODAL_DEFS[key];
+  if(key==='edit-product'&&data){
+    cfg={title:'Edit product — '+data.name,sub:'Changes require Authorizer approval to go live',
+      fields:[{l:'Product name',t:'text',v:data.name},{l:'Type',t:'select',opts:['Revolving Credit','Term Loan','Asset Finance','Emergency Loan'],v:data.type},{l:'Min limit (%)',t:'number',v:data.minLmt},{l:'Max limit (%)',t:'number',v:data.maxLmt},{l:'Tenor (days)',t:'number',v:data.tenor},{l:'Interest rate (%/day)',t:'number',v:data.rate},{l:'Penalty rate (%/day)',t:'number',v:data.penalty},{l:'Prolongation fee (%)',t:'number',v:data.prolong},{l:'Collateral',t:'text',v:data.collateral},{l:'Status',t:'select',opts:['active','draft'],v:data.status}],
+      action:'Submit for approval'};
+  }
+  if(!cfg)return;
+  document.getElementById('modal-content').innerHTML=`
+    <h3>${cfg.title}</h3><p class="modal-sub">${cfg.sub}</p>
+    ${cfg.fields.map(f=>`<div class="mf"><label>${f.l}</label>
+      ${f.t==='select'?`<select class="mi">${f.opts.map(o=>`<option ${f.v===o?'selected':''}>${o}</option>`).join('')}</select>`:
+        f.t==='textarea'?`<textarea class="mi" rows="3" placeholder="${f.ph||''}">${f.v||''}</textarea>`:
+        `<input type="${f.t}" class="mi" placeholder="${f.ph||''}" value="${f.v||''}">`}
+    </div>`).join('')}
+    <div class="ma">
+      <button class="btn" style="flex:1" onclick="closeModal()">Cancel</button>
+      <button class="btn primary" style="flex:2" onclick="showToast('${cfg.action}','accent');closeModal()">${cfg.action}</button>
+    </div>`;
+  document.getElementById('modal-bg').classList.add('open');
+}
+function closeModal(){document.getElementById('modal-bg').classList.remove('open');}
+
+// ===== TOAST =====
+function showToast(msg,type='accent'){
+  const wrap=document.getElementById('toasts');
+  const t=document.createElement('div');t.className='toast';
+  const col=type==='accent'?'var(--accent)':type==='blue'?'var(--blue)':type==='red'?'var(--red)':'var(--amber)';
+  t.innerHTML=`<div class="toast-dot" style="background:${col}"></div>${msg}`;
+  wrap.appendChild(t);
+  setTimeout(()=>t.classList.add('show'),10);
+  setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300);},3200);
+}
+
+// Init
+renderDashChart();renderActivityTable();renderFeed();
+</script>
+</body>
+</html>

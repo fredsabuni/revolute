@@ -1,0 +1,1813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REVOLVER — Technical Requirements</title>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;600;700;800&family=Google+Sans+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c0f;
+    --surface: #111418;
+    --surface2: #181d24;
+    --border: #1e2630;
+    --accent: #00e5a0;
+    --accent2: #0077ff;
+    --accent3: #ff6b35;
+    --warn: #ffd23f;
+    --text: #edf2f7;
+    --text-muted: #9bafc6;
+    --text-dim: #5a7090;
+    --font-display: 'Google Sans', sans-serif;
+    --font-mono: 'Google Sans Mono', monospace;
+    --font-code: 'Google Sans Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-display);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ===== HEADER ===== */
+  .hero {
+    position: relative;
+    padding: 80px 60px 60px;
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(0,229,160,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -100px; left: 30%;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(0,119,255,0.04) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--accent);
+    border: 1px solid rgba(0,229,160,0.3);
+    padding: 5px 14px;
+    border-radius: 2px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-size: clamp(42px, 6vw, 80px);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    margin-bottom: 8px;
+  }
+
+  h1 span.accent { color: var(--accent); }
+  h1 span.dim { color: var(--text-dim); }
+
+  .hero-sub {
+    font-family: var(--font-mono);
+    font-size: 15px;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    margin-top: 16px;
+    max-width: 600px;
+  }
+
+  .hero-meta {
+    display: flex;
+    gap: 32px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+  }
+
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .meta-label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+  }
+
+  .meta-value {
+    font-family: var(--font-mono);
+    font-size: 15px;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* ===== LAYOUT ===== */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 60px;
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+  }
+
+  /* ===== SECTIONS ===== */
+  section {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-header {
+    padding: 48px 60px 0;
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .section-number {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-size: 34px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  .section-body {
+    padding: 0 60px 48px;
+  }
+
+  /* ===== CARDS ===== */
+  .card {
+    background: var(--surface);
+    padding: 28px;
+    border-radius: 0;
+  }
+
+  .card-title {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-title::before {
+    content: '//';
+    color: var(--text-dim);
+  }
+
+  .card p {
+    font-size: 16px;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  .card h3 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+
+  /* ===== USSD FLOW ===== */
+  .ussd-container {
+    padding: 40px 60px;
+  }
+
+  .phone-mock {
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    max-width: 340px;
+    font-family: var(--font-code);
+    font-size: 14px;
+  }
+
+  .phone-bar {
+    background: #161b22;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .phone-bar span {
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+  }
+
+  .phone-screen {
+    padding: 16px;
+    color: var(--accent);
+    min-height: 200px;
+    line-height: 1.8;
+    white-space: pre;
+  }
+
+  .flow-tree {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .flow-node {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+  }
+
+  .flow-line {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 40px;
+    flex-shrink: 0;
+  }
+
+  .flow-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    margin-top: 4px;
+    flex-shrink: 0;
+  }
+
+  .flow-dot.blue { background: var(--accent2); }
+  .flow-dot.orange { background: var(--accent3); }
+  .flow-dot.warn { background: var(--warn); }
+
+  .flow-vert {
+    width: 1px;
+    background: var(--border);
+    flex: 1;
+    min-height: 24px;
+  }
+
+  .flow-content {
+    padding: 2px 0 20px 12px;
+    flex: 1;
+  }
+
+  .flow-label {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .flow-msg {
+    font-size: 15px;
+    color: var(--text);
+    margin-top: 2px;
+  }
+
+  .flow-msg.sw {
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 13px;
+  }
+
+  /* ===== TABLE ===== */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+  }
+
+  .data-table th {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-dim);
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .data-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-muted);
+    vertical-align: top;
+  }
+
+  .data-table tr:last-child td { border-bottom: none; }
+
+  .data-table td:first-child {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--accent2);
+    white-space: nowrap;
+  }
+
+  .data-table tr:hover td { background: rgba(255,255,255,0.01); }
+
+  /* ===== TAGS ===== */
+  .tag {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .tag-green { background: rgba(0,229,160,0.1); color: var(--accent); border: 1px solid rgba(0,229,160,0.2); }
+  .tag-blue { background: rgba(0,119,255,0.1); color: var(--accent2); border: 1px solid rgba(0,119,255,0.2); }
+  .tag-orange { background: rgba(255,107,53,0.1); color: var(--accent3); border: 1px solid rgba(255,107,53,0.2); }
+  .tag-warn { background: rgba(255,210,63,0.1); color: var(--warn); border: 1px solid rgba(255,210,63,0.2); }
+
+  /* ===== ARCH DIAGRAM ===== */
+  .arch-diagram {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    margin-bottom: 24px;
+  }
+
+  .arch-node {
+    background: var(--surface);
+    padding: 24px;
+    position: relative;
+  }
+
+  .arch-node-label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 8px;
+  }
+
+  .arch-node-name {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .arch-node p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  .arch-node.accent-green .arch-node-name { color: var(--accent); }
+  .arch-node.accent-blue .arch-node-name { color: var(--accent2); }
+  .arch-node.accent-orange .arch-node-name { color: var(--accent3); }
+  .arch-node.accent-warn .arch-node-name { color: var(--warn); }
+
+  /* ===== CODE BLOCKS ===== */
+  .code-block {
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 20px 24px;
+    font-family: var(--font-code);
+    font-size: 14px;
+    color: #a8d8a8;
+    line-height: 1.8;
+    overflow-x: auto;
+    margin: 16px 0;
+  }
+
+  .code-block .c { color: var(--text-dim); }
+  .code-block .k { color: var(--accent2); }
+  .code-block .s { color: var(--warn); }
+  .code-block .n { color: var(--accent); }
+
+  /* ===== SPEC LIST ===== */
+  .spec-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .spec-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 16px;
+    color: var(--text-muted);
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+  }
+
+  .spec-list li::before {
+    content: '→';
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ===== SCENARIO BLOCK ===== */
+  .scenario {
+    background: var(--surface);
+    border-left: 2px solid var(--accent2);
+    padding: 16px 20px;
+    margin: 8px 0;
+  }
+
+  .scenario-id {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent2);
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+
+  .scenario p {
+    font-size: 15px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  .scenario .en { color: var(--text); }
+  .scenario .sw { color: var(--accent); font-family: var(--font-mono); font-size: 13px; margin-top: 4px; }
+
+  /* ===== DIVIDER ===== */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 0 60px;
+  }
+
+  /* ===== TABS ===== */
+  .tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    padding: 0 60px;
+  }
+
+  .tab {
+    padding: 14px 24px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ===== PRODUCT SPEC TABLE ===== */
+  .spec-grid {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 0;
+  }
+
+  .spec-row {
+    display: contents;
+  }
+
+  .spec-key {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 18px 24px 18px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .spec-val {
+    font-size: 15px;
+    color: var(--text);
+    padding: 18px 0 18px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ===== WHATSAPP SECTION ===== */
+  .wa-screen {
+    background: #075E54;
+    border-radius: 12px;
+    overflow: hidden;
+    max-width: 380px;
+    font-family: var(--font-display);
+  }
+
+  .wa-bar {
+    background: #075E54;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .wa-avatar {
+    width: 36px; height: 36px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 14px;
+    color: #0a0c0f;
+  }
+
+  .wa-name { font-size: 15px; font-weight: 600; color: white; }
+  .wa-status { font-size: 11px; color: rgba(255,255,255,0.7); }
+
+  .wa-chat {
+    background: #ECE5DD;
+    padding: 12px;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .wa-msg {
+    max-width: 80%;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 15px;
+    line-height: 1.5;
+    position: relative;
+  }
+
+  .wa-msg.bot {
+    background: white;
+    color: #1a1a1a;
+    align-self: flex-start;
+    border-bottom-left-radius: 2px;
+  }
+
+  .wa-msg.user {
+    background: #DCF8C6;
+    color: #1a1a1a;
+    align-self: flex-end;
+    border-bottom-right-radius: 2px;
+  }
+
+  .wa-time {
+    font-size: 10px;
+    color: #999;
+    text-align: right;
+    margin-top: 2px;
+  }
+
+  .wa-menu {
+    background: white;
+    border-radius: 8px;
+    border-bottom-left-radius: 2px;
+    overflow: hidden;
+    max-width: 85%;
+  }
+
+  .wa-menu-header {
+    background: #075E54;
+    color: white;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .wa-menu-item {
+    padding: 10px 12px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+    color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .wa-menu-item:last-child { border-bottom: none; }
+
+  .wa-menu-num {
+    width: 20px; height: 20px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; color: #0a0c0f;
+    flex-shrink: 0;
+  }
+
+  /* ===== API ENDPOINTS ===== */
+  .endpoint {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .method {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 2px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .method.post { background: rgba(0,229,160,0.15); color: var(--accent); }
+  .method.get { background: rgba(0,119,255,0.15); color: var(--accent2); }
+  .method.put { background: rgba(255,210,63,0.15); color: var(--warn); }
+
+  .endpoint-path {
+    font-family: var(--font-code);
+    font-size: 13px;
+    color: var(--text);
+  }
+
+  .endpoint-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  /* ===== FOOTER ===== */
+  footer {
+    padding: 40px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border);
+  }
+
+  footer .left {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  footer .right {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    text-align: right;
+  }
+
+  .highlight { color: var(--accent); }
+
+  /* ===== ANIMATIONS ===== */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate { animation: fadeInUp 0.5s ease both; }
+  .delay-1 { animation-delay: 0.1s; }
+  .delay-2 { animation-delay: 0.2s; }
+  .delay-3 { animation-delay: 0.3s; }
+
+  @media print {
+    body { background: white; color: black; }
+  }
+
+  @media (max-width: 768px) {
+    .hero, .section-body, .section-header, footer { padding-left: 24px; padding-right: 24px; }
+    .grid-2, .grid-3, .arch-diagram { grid-template-columns: 1fr; }
+    .tabs { padding: 0 24px; overflow-x: auto; }
+    .ussd-container { padding: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<header class="hero">
+  <div class="badge">Technical Specification Document</div>
+  <h1><span class="accent">REVOLVER</span><span class="dim"> /</span> App Build</h1>
+  <div class="hero-sub">WhatsApp-first revolving credit platform — USSD menu flows, system architecture & API requirements for device-financing clients in Tanzania.</div>
+  <div class="hero-meta">
+    <div class="meta-item">
+      <span class="meta-label">Primary Channel</span>
+      <span class="meta-value">WhatsApp Business API</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">USSD Code</span>
+      <span class="meta-value">*150*49#</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Currency</span>
+      <span class="meta-value">TZS (Tanzanian Shilling)</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Loan Tenure</span>
+      <span class="meta-value">30–60 Days Revolving</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Target Users</span>
+      <span class="meta-value">Device Financing Clients</span>
+    </div>
+  </div>
+</header>
+
+<!-- ===== TOC ===== -->
+<nav style="padding: 20px 60px; border-bottom: 1px solid var(--border); display: flex; gap: 24px; flex-wrap: wrap;">
+  <a href="#overview" style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase;">01 / Product Overview</a>
+  <a href="#architecture" style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase;">02 / System Architecture</a>
+  <a href="#whatsapp" style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase;">03 / WhatsApp Channel</a>
+  <a href="#ussd" style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase;">04 / USSD Menu Flows</a>
+  <a href="#api" style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase;">05 / API Endpoints</a>
+  <a href="#backoffice" style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase;">06 / Back Office</a>
+  <a href="#collection" style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase;">07 / Collection & SMS</a>
+  <a href="#nfr" style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase;">08 / Non-Functional Req</a>
+</nav>
+
+<!-- ===== SECTION 1: PRODUCT OVERVIEW ===== -->
+<section id="overview">
+  <div class="section-header">
+    <span class="section-number">01 —</span>
+    <h2>Product Overview</h2>
+  </div>
+  <div class="section-body">
+    <div class="grid-3" style="margin-bottom: 32px;">
+      <div class="card">
+        <div class="card-title">Product</div>
+        <h3>REVOLVER</h3>
+        <p>Short-term revolving credit for device financing clients and employees. Covers emergency credit requirements with fast 24hr disbursement.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Facility</div>
+        <h3>20%–60% Net Pay</h3>
+        <p>Min 20% / Max 60% of net salary. Tenure of 60 days. Risk-based pricing from 0.25%–0.83% interest. No loan fees or early settlement fees.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Repayment</div>
+        <h3>Mobile Money</h3>
+        <p>Self-repayment via Mpesa, TigoPesa, AirtelMoney. Debit order mandate as additional assurance. Prolongation available at 10% of outstanding balance.</p>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div style="padding-right: 32px;">
+        <p style="font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 20px;">Product Parameters</p>
+        <div class="spec-grid">
+          <div class="spec-key">Loan Limit</div><div class="spec-val">20%–60% of net pay (TZS)</div>
+          <div class="spec-key">Interest Rate</div><div class="spec-val">0.25%–0.83% (risk-based, daily)</div>
+          <div class="spec-key">Tenure</div><div class="spec-val">60 days, revolving</div>
+          <div class="spec-key">Disbursement</div><div class="spec-val">Within 24 hours via B2C wallet</div>
+          <div class="spec-key">Prolongation</div><div class="spec-val">10% of outstanding balance → +30 days</div>
+          <div class="spec-key">Penalty</div><div class="spec-val">0.5% daily on outstanding balance (default)</div>
+          <div class="spec-key">Default Trigger</div><div class="spec-val">Failure to pay within 30 days</div>
+          <div class="spec-key">Settlement Default</div><div class="spec-val">Failure to pay within 60 days</div>
+          <div class="spec-key">Currency</div><div class="spec-val">Tanzanian Shilling (TZS)</div>
+          <div class="spec-key">Governing Law</div><div class="spec-val">Laws of United Republic of Tanzania</div>
+        </div>
+      </div>
+      <div>
+        <p style="font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 16px;">Risk Classification</p>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="background: var(--surface); padding: 16px; border-left: 2px solid var(--accent);">
+            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px;">Low Risk (80% of portfolio)</div>
+            <div style="font-size: 13px; color: var(--text-muted);">Higher credit assessment scores → lower interest rate. Majority allocation for stable portfolio performance.</div>
+          </div>
+          <div style="background: var(--surface); padding: 16px; border-left: 2px solid var(--accent3);">
+            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--accent3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px;">High Risk (20% of portfolio)</div>
+            <div style="font-size: 13px; color: var(--text-muted);">Lower credit scores → higher interest rate. Limited to 20% of total asset allocation.</div>
+          </div>
+          <div style="background: var(--surface); padding: 16px; border-left: 2px solid var(--accent2);">
+            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--accent2); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px;">CRB Integration</div>
+            <div style="font-size: 13px; color: var(--text-muted);">D&B credit bureau check mandatory at onboarding. Defaulters (120+ days) reported to CRB, restricting future credit access.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 2: SYSTEM ARCHITECTURE ===== -->
+<section id="architecture">
+  <div class="section-header">
+    <span class="section-number">02 —</span>
+    <h2>System Architecture</h2>
+  </div>
+  <div class="section-body">
+    <div class="arch-diagram" style="margin-bottom: 32px;">
+      <div class="arch-node accent-blue">
+        <div class="arch-node-label">Channel Layer</div>
+        <div class="arch-node-name">WhatsApp Business API</div>
+        <p>Primary user channel. Conversational loan application, repayment instructions, balance checks & automated collection messages via WhatsApp Cloud API.</p>
+        <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+          <span class="tag tag-blue">WhatsApp Cloud API</span>
+          <span class="tag tag-green">Interactive Messages</span>
+        </div>
+      </div>
+      <div class="arch-node accent-green">
+        <div class="arch-node-label">Channel Layer</div>
+        <div class="arch-node-name">USSD Application</div>
+        <p>Fallback channel via *150*49#. Full menu for loan requests, repayments, balance check, due dates, mini statements, PIN change, and language toggle.</p>
+        <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+          <span class="tag tag-green">*150*49#</span>
+          <span class="tag tag-orange">Bi-lingual EN/SW</span>
+        </div>
+      </div>
+      <div class="arch-node accent-orange">
+        <div class="arch-node-label">Integration Layer</div>
+        <div class="arch-node-name">MNO Wallets (B2C / C2B)</div>
+        <p>Disbursement (B2C) and repayment collection (C2B) wallets. Integrated with Mpesa, TigoPesa, and AirtelMoney via API for real-time fund movement.</p>
+        <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+          <span class="tag tag-orange">Mpesa</span>
+          <span class="tag tag-orange">TigoPesa</span>
+          <span class="tag tag-orange">AirtelMoney</span>
+        </div>
+      </div>
+      <div class="arch-node accent-warn">
+        <div class="arch-node-label">Integration Layer</div>
+        <div class="arch-node-name">CRB (D&B)</div>
+        <p>Credit Reference Bureau integration (Dun & Bradstreet, licensed by BoT). Mandatory credit check at QC approval stage. Negative listing for 120+ day defaulters.</p>
+        <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+          <span class="tag tag-warn">D&B Tanzania</span>
+          <span class="tag tag-warn">BoT Licensed</span>
+        </div>
+      </div>
+      <div class="arch-node accent-blue">
+        <div class="arch-node-label">Core System</div>
+        <div class="arch-node-name">Nipeboost Back Office</div>
+        <p>Central web portal with role-based modules: Agent (registration), QC (approval), Customer Care, Finance, Administrator, and Authorizer.</p>
+        <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+          <span class="tag tag-blue">Web Portal</span>
+          <span class="tag tag-blue">Role-based Access</span>
+        </div>
+      </div>
+      <div class="arch-node" style="background: var(--surface);">
+        <div class="arch-node-label">Notification Layer</div>
+        <div class="arch-node-name" style="color: var(--text);">SMS Gateway</div>
+        <p>Automated transactional SMS for registration confirmation, repayment reminders (BDD/DD), collection alerts (PDD 1–90+ days), and PIN delivery.</p>
+        <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+          <span class="tag tag-green">Automated</span>
+          <span class="tag tag-orange">EN + Kiswahili</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="background: var(--surface); padding: 24px; border-left: 2px solid var(--accent);">
+      <p style="font-family: var(--font-mono); font-size: 10px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 12px;">System Data Flow</p>
+      <div class="code-block">
+<span class="c">// Loan Disbursement Flow</span>
+<span class="k">Client</span> → [WhatsApp / USSD] → <span class="n">Loan Request API</span> → <span class="n">Nipeboost Core</span>
+  → <span class="k">CRB Check</span> (eligibility) → <span class="n">Loan Created</span>
+  → <span class="k">B2C API</span> (Mpesa/Tigo/Airtel) → <span class="n">Client Mobile Wallet</span>
+  → <span class="k">SMS Confirmation</span> → Client
+
+<span class="c">// Repayment Flow</span>
+<span class="k">Client</span> → [MNO PayBill] → <span class="n">C2B Wallet</span> → <span class="n">Nipeboost Core</span>
+  → <span class="k">Account Update</span> → <span class="k">SMS Confirmation</span> → Client
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 3: WHATSAPP CHANNEL ===== -->
+<section id="whatsapp">
+  <div class="section-header">
+    <span class="section-number">03 —</span>
+    <h2>WhatsApp Channel Requirements</h2>
+  </div>
+  <div class="section-body">
+    <div class="grid-2" style="gap: 40px; background: transparent;">
+
+      <!-- Left: Requirements -->
+      <div>
+        <p style="font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 20px;">Technical Requirements</p>
+        <ul class="spec-list">
+          <li>WhatsApp Business Platform (Cloud API) — Meta verified Business Account required</li>
+          <li>Webhook server to receive and process inbound messages from WhatsApp</li>
+          <li>Interactive message templates: List Messages (menus), Reply Buttons (confirm/cancel), and Flow messages for multi-step forms</li>
+          <li>24-hour messaging window handling — use template messages (HSMs) for outbound initiated messages beyond 24hr window</li>
+          <li>Session state management — maintain conversation context per phone number across turns (Redis or similar)</li>
+          <li>Phone number verification against registered client database on every session initiation</li>
+          <li>Language preference stored per client — default Kiswahili, switchable to English within session</li>
+          <li>PIN input handling — masked input, max 5 failed attempts before lockout, server-side validation only</li>
+          <li>Loan amount input validation — numeric only, minimum TZS 5,000, within available facility limit</li>
+          <li>WhatsApp opt-in confirmation required during registration (T&Cs acceptance)</li>
+          <li>Automated notification templates pre-approved by Meta for collection and repayment reminders</li>
+          <li>End-to-end encryption compliance — no storage of message content, only transaction metadata</li>
+        </ul>
+      </div>
+
+      <!-- Right: Mock UI -->
+      <div>
+        <p style="font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 20px;">WhatsApp Main Menu — UI Reference</p>
+        <div class="wa-screen">
+          <div class="wa-bar">
+            <div class="wa-avatar">R</div>
+            <div>
+              <div class="wa-name">REVOLVER</div>
+              <div class="wa-status">Powered by Nipeboost</div>
+            </div>
+          </div>
+          <div class="wa-chat">
+            <div class="wa-msg bot">
+              Habari! Karibu REVOLVER. 👋<br>
+              <span style="color: #555; font-size: 11px;">Please enter your PIN to continue.</span>
+              <div class="wa-time">09:41</div>
+            </div>
+            <div class="wa-msg user">****<div class="wa-time">09:41 ✓✓</div></div>
+            <div class="wa-menu">
+              <div class="wa-menu-header">🔒 REVOLVER Menu — Select a service</div>
+              <div class="wa-menu-item"><div class="wa-menu-num">1</div> Request a Loan / Omba Mkopo</div>
+              <div class="wa-menu-item"><div class="wa-menu-num" style="background: var(--accent2); color: white;">2</div> Repay or Prolong / Lipa au Sogeza</div>
+              <div class="wa-menu-item"><div class="wa-menu-num" style="background: var(--warn); color: #0a0c0f;">3</div> Check Balance / Angalia Salio</div>
+              <div class="wa-menu-item"><div class="wa-menu-num" style="background: var(--accent3); color: white;">4</div> Due Date / Muda wa Malipo</div>
+              <div class="wa-menu-item"><div class="wa-menu-num" style="background: #888; color: white;">5</div> Mini Statement / Taarifa Fupi</div>
+              <div class="wa-menu-item"><div class="wa-menu-num" style="background: #555; color: white;">6</div> Change PIN / Badili Siri</div>
+              <div class="wa-menu-item"><div class="wa-menu-num" style="background: #333; color: white;">7</div> Change Language / Badili Lugha</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 20px; background: var(--surface); padding: 16px; border-left: 2px solid var(--warn);">
+          <p style="font-family: var(--font-mono); font-size: 10px; color: var(--warn); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">⚠ WhatsApp vs USSD Parity</p>
+          <p style="font-size: 13px; color: var(--text-muted);">The WhatsApp channel must mirror all USSD menu functionality and messaging. Both channels must produce identical transaction outcomes, with WhatsApp offering a richer interactive UI (buttons, lists, media).</p>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 32px;">
+      <p style="font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 16px;">WhatsApp Message Flow — Loan Request</p>
+      <div class="flow-tree">
+        <div class="flow-node">
+          <div class="flow-line"><div class="flow-dot"></div><div class="flow-vert"></div></div>
+          <div class="flow-content">
+            <div class="flow-label">Trigger</div>
+            <div class="flow-msg">Client sends "Hi" or initiates WhatsApp chat → Bot responds with PIN prompt</div>
+          </div>
+        </div>
+        <div class="flow-node">
+          <div class="flow-line"><div class="flow-dot blue"></div><div class="flow-vert"></div></div>
+          <div class="flow-content">
+            <div class="flow-label">PIN Auth</div>
+            <div class="flow-msg">Client enters 4-digit PIN → System validates → Max 5 attempts before block</div>
+          </div>
+        </div>
+        <div class="flow-node">
+          <div class="flow-line"><div class="flow-dot"></div><div class="flow-vert"></div></div>
+          <div class="flow-content">
+            <div class="flow-label">Menu</div>
+            <div class="flow-msg">WhatsApp List Message displayed with 8 menu options → Client selects "1. Request a Loan"</div>
+          </div>
+        </div>
+        <div class="flow-node">
+          <div class="flow-line"><div class="flow-dot blue"></div><div class="flow-vert"></div></div>
+          <div class="flow-content">
+            <div class="flow-label">Amount Entry</div>
+            <div class="flow-msg">Bot shows available facility → Client types amount → System validates (min TZS 5,000, max facility limit, no decimals)</div>
+          </div>
+        </div>
+        <div class="flow-node">
+          <div class="flow-line"><div class="flow-dot warn"></div><div class="flow-vert"></div></div>
+          <div class="flow-content">
+            <div class="flow-label">Confirmation</div>
+            <div class="flow-msg">Bot displays loan summary with repayment amount + prolongation fee + due date → Reply buttons: [Confirm] [Cancel]</div>
+          </div>
+        </div>
+        <div class="flow-node">
+          <div class="flow-line"><div class="flow-dot"></div><div class="flow-vert"></div></div>
+          <div class="flow-content">
+            <div class="flow-label">PIN Confirmation</div>
+            <div class="flow-msg">Client enters PIN to authorize → System calls Loan Creation API → B2C disbursement triggered</div>
+          </div>
+        </div>
+        <div class="flow-node">
+          <div class="flow-line"><div class="flow-dot orange"></div></div>
+          <div class="flow-content">
+            <div class="flow-label">Success / Failure</div>
+            <div class="flow-msg">Success: Confirmation message with loan amount, repayment amount, due date (EN + SW). Failure: Error message with reason code.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 4: USSD MENU FLOWS ===== -->
+<section id="ussd">
+  <div class="section-header">
+    <span class="section-number">04 —</span>
+    <h2>USSD Menu Flows</h2>
+  </div>
+
+  <div class="tabs" id="ussd-tabs">
+    <div class="tab active" onclick="switchTab('menu-structure')">Menu Structure</div>
+    <div class="tab" onclick="switchTab('loan-request')">1. Loan Request</div>
+    <div class="tab" onclick="switchTab('repay')">2. Repay / Prolong</div>
+    <div class="tab" onclick="switchTab('balance')">3. Balance & Due Date</div>
+    <div class="tab" onclick="switchTab('account')">4. Account Management</div>
+    <div class="tab" onclick="switchTab('registration')">Registration Flow</div>
+  </div>
+
+  <!-- TAB: Menu Structure -->
+  <div id="tab-menu-structure" class="tab-content active" style="padding: 32px 60px;">
+    <div class="grid-2" style="gap: 40px; background: transparent;">
+      <div>
+        <p style="font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 16px;">USSD Main Menu — *150*49#</p>
+        <div class="phone-mock">
+          <div class="phone-bar">
+            <div style="width:8px;height:8px;background:var(--accent);border-radius:50%;"></div>
+            <span>*150*49# — REVOLVER</span>
+          </div>
+          <div class="phone-screen">REVOLVER / NIPEBOOST
+─────────────────────
+1. Request a Loan
+   Omba Mkopo
+2. Repay or Prolong
+   Lipa Mkopo au Sogeza
+3. Check Balance
+   Angalia Salio
+4. Check Due Date
+   Muda wa Malipo
+5. Mini Statement
+   Taarifa fupi
+6. Change PIN
+   Badili namba ya siri
+7. Change Language
+   Badili lugha
+8. Service Terms
+   Vigezo na masharti
+─────────────────────
+Enter option:</div>
+        </div>
+      </div>
+      <div>
+        <p style="font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 16px;">Menu Sub-structure</p>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="background: var(--surface); padding: 14px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-family: var(--font-mono); font-size: 12px; color: var(--accent);">1 → Request a Loan</span>
+            <span class="tag tag-green">Direct → Amount Entry</span>
+          </div>
+          <div style="background: var(--surface); padding: 14px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span style="font-family: var(--font-mono); font-size: 12px; color: var(--accent2);">2 → Repay or Prolong</span>
+              <span class="tag tag-blue">Sub-menu</span>
+            </div>
+            <div style="padding-left: 16px; display: flex; flex-direction: column; gap: 4px;">
+              <span style="font-size: 12px; color: var(--text-muted);">2.1 → Pay Loan (Lipa Mkopo)</span>
+              <span style="font-size: 12px; color: var(--text-muted);">2.2 → Prolong Loan (Sogeza Muda)</span>
+            </div>
+          </div>
+          <div style="background: var(--surface); padding: 14px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-family: var(--font-mono); font-size: 12px; color: var(--warn);">3 → Check Balance</span>
+            <span class="tag tag-warn">PIN Required</span>
+          </div>
+          <div style="background: var(--surface); padding: 14px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-family: var(--font-mono); font-size: 12px; color: var(--text-muted);">4 → Check Due Date</span>
+            <span class="tag tag-green">Info Screen</span>
+          </div>
+          <div style="background: var(--surface); padding: 14px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-family: var(--font-mono); font-size: 12px; color: var(--text-muted);">5 → Mini Statement</span>
+            <span class="tag tag-blue">SMS Delivery</span>
+          </div>
+          <div style="background: var(--surface); padding: 14px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-family: var(--font-mono); font-size: 12px; color: var(--text-muted);">6 → Change PIN</span>
+            <span class="tag tag-warn">Old + New + Confirm</span>
+          </div>
+          <div style="background: var(--surface); padding: 14px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span style="font-family: var(--font-mono); font-size: 12px; color: var(--text-muted);">7 → Change Language</span>
+              <span class="tag tag-green">Sub-menu</span>
+            </div>
+            <div style="padding-left: 16px; display: flex; flex-direction: column; gap: 4px;">
+              <span style="font-size: 12px; color: var(--text-muted);">7.1 → English</span>
+              <span style="font-size: 12px; color: var(--text-muted);">7.2 → Kiswahili</span>
+            </div>
+          </div>
+          <div style="background: var(--surface); padding: 14px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-family: var(--font-mono); font-size: 12px; color: var(--text-muted);">8 → Service Terms</span>
+            <span class="tag tag-blue">URL Redirect</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: Loan Request Flows -->
+  <div id="tab-loan-request" class="tab-content" style="padding: 32px 60px;">
+    <p style="font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 24px;">Menu Option 1 — Request a Loan / Omba Mkopo — All Scenarios</p>
+    <table class="data-table" style="background: var(--surface);">
+      <thead>
+        <tr>
+          <th>Scenario #</th>
+          <th>Condition</th>
+          <th>USSD Screen (English)</th>
+          <th>USSD Screen (Kiswahili)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>SC-01</td>
+          <td>Client selects "Request Loan"</td>
+          <td style="color: var(--text);">Your facility available is TZSxxx, please enter requested amount…</td>
+          <td style="color: var(--accent); font-family: var(--font-mono); font-size: 11px;">Kiwango chako cha kukopa ni Shxxxxxx, ingiza kiasi unachotaka kukopa…</td>
+        </tr>
+        <tr>
+          <td>SC-02</td>
+          <td>Amount entered — awaiting confirmation</td>
+          <td style="color: var(--text);">You have requested a loan of TZSxx, please enter PIN to confirm…</td>
+          <td style="color: var(--accent); font-family: var(--font-mono); font-size: 11px;">Umeomba mkopo wa Shxxxxxx, ingiza namba ya siri kuhakiki…</td>
+        </tr>
+        <tr>
+          <td>SC-03</td>
+          <td>✅ Success — amount within limit</td>
+          <td style="color: var(--text);">You have requested a loan of TZSxx with repayment of TZSxx or prolongation fee of TZSxx to be paid on dd/mm/yy</td>
+          <td style="color: var(--accent); font-family: var(--font-mono); font-size: 11px;">Umefanikiwa kupokea mkopo wa TZS 200,000, utarejesha TZS xxxx au utaweza kusogeza muda kwa kulipa ada ya TZS xxxx kabla ya tarehe dd/mm/yy. Asante kwa kutumia NIPEBOOST</td>
+        </tr>
+        <tr>
+          <td>SC-04</td>
+          <td>❌ Amount above max facility</td>
+          <td style="color: var(--text);">The amount requested will exceed your available facility. Your available facility is TZSxx</td>
+          <td style="color: var(--accent); font-family: var(--font-mono); font-size: 11px;">Kiasi unachajaribu kukopa kinazidi ukomo wako. Kiasi unachoweza kukopa ni Shxxxxx</td>
+        </tr>
+        <tr>
+          <td>SC-05</td>
+          <td>❌ Amount below minimum (TZS 5,000)</td>
+          <td style="color: var(--text);">The amount requested is below the minimum limit of TZS 5,000</td>
+          <td style="color: var(--accent); font-family: var(--font-mono); font-size: 11px;">Kiasi unachojaribu kukopa kipo chini ya TZSS 5000</td>
+        </tr>
+        <tr>
+          <td>SC-06</td>
+          <td>❌ Decimal/invalid amount entered</td>
+          <td style="color: var(--text);">You have entered an invalid amount</td>
+          <td style="color: var(--accent); font-family: var(--font-mono); font-size: 11px;">Umeingiza kiasi ambacho si sahihi</td>
+        </tr>
+        <tr>
+          <td>SC-07</td>
+          <td>❌ Account in arrears</td>
+          <td style="color: var(--text);">Your account is suspended due to previous outstanding balance in arrears. Please pay in full or pay prolongation fee</td>
+          <td style="color: var(--accent); font-family: var(--font-mono); font-size: 11px;">Umesitisiwa huduma kwa muda mpaka ulipe deni lako. Tafadhali lipa deni lote au ada ya kusogeza muda</td>
+        </tr>
+        <tr>
+          <td>SC-08</td>
+          <td>❌ Account suspended (admin)</td>
+          <td style="color: var(--text);">Your account is suspended, please contact customer care xxxx for help</td>
+          <td style="color: var(--accent); font-family: var(--font-mono); font-size: 11px;">Umesitisiwa huduma kwa sasa, kwa maelezo zaidi piga huduma kwa wateja xxxxxxxx</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- TAB: Repay / Prolong -->
+  <div id="tab-repay" class="tab-content" style="padding: 32px 60px;">
+    <p style="font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 24px;">Menu Option 2 — Repay Loan & Prolong — All Scenarios</p>
+    <div style="margin-bottom: 24px; display: flex; gap: 12px; align-items: center;">
+      <span class="tag tag-blue">2.1 Pay Loan</span>
+      <span style="color: var(--text-dim); font-size: 13px;">Client directed to pay via Mpesa / TigoPesa / AirtelMoney using reference number</span>
+    </div>
+    <table class="data-table" style="background: var(--surface); margin-bottom: 32px;">
+      <thead><tr><th>SC #</th><th>Condition</th><th>English</th><th>Inbox SMS (EN)</th></tr></thead>
+      <tbody>
+        <tr><td>SC-07</td><td>Select "Pay Loan"</td><td style="color:var(--text)">Repay through Mpesa, TigoPesa, AirtelMoney menu. Your total due: TZSxxx. Ref no: xxxx</td><td style="color:var(--text-muted);font-size:12px;">Your total amount to pay is Txxx. Your payment reference no is xxxx</td></tr>
+        <tr><td>SC-08</td><td>✅ Full payment received</td><td style="color:var(--text)">You have successfully paid Tshxxx, your current loan outstanding balance is Tsh0.</td><td style="color:var(--text-muted);font-size:12px;">You have successfully paid Tshxxx, your current loan outstanding balance is Tsh0.</td></tr>
+        <tr><td>SC-09</td><td>✅ Partial payment</td><td style="color:var(--text)">You have successfully paid Tshxxx, your current loan outstanding balance is Tshxxx.</td><td style="color:var(--text-muted);font-size:12px;">You have successfully paid Tshxxx, your current loan outstanding balance is Tshxxx.</td></tr>
+        <tr><td>SC-10</td><td>✅ Overpayment</td><td style="color:var(--text)">You have successfully paid Tshxxx, your current loan outstanding balance is Tsh0. <span style="color:var(--warn)">(Excess sits as credit)</span></td><td style="color:var(--text-muted);font-size:12px;">{FirstName}, Umefanikiwa kulipa Shxxxxxx, deni lako sasa ni Sh0.</td></tr>
+      </tbody>
+    </table>
+
+    <div style="margin-bottom: 24px; display: flex; gap: 12px; align-items: center;">
+      <span class="tag tag-orange">2.2 Prolong Loan</span>
+      <span style="color: var(--text-dim); font-size: 13px;">Extend due date by 30 days by paying prolongation fee (10% of outstanding)</span>
+    </div>
+    <table class="data-table" style="background: var(--surface);">
+      <thead><tr><th>SC #</th><th>Condition</th><th>English</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td>SC-11</td><td>Select "Prolong"</td><td style="color:var(--text)">Repay through Mpesa/TigoPesa/AirtelMoney. Prolongation fee: TZSxxx. Ref: xxxx</td><td></td></tr>
+        <tr><td>SC-12</td><td>✅ Full prolongation fee paid</td><td style="color:var(--text)">You have successfully paid the prolongation fee of TZSxxx for 30 days. Outstanding: TZSxx due dd/mm/yy</td><td></td></tr>
+        <tr><td>SC-13</td><td>❌ Insufficient prolongation fee</td><td style="color:var(--text)">The amount you want to pay is insufficient. Your prolongation fee is TZSxx</td><td></td></tr>
+        <tr><td>SC-14</td><td>✅ Paid more than prolong fee</td><td style="color:var(--text)">Successfully paid prolongation fee TZSxxx for 30 days. Outstanding: TZSxx due dd/mm/yy</td><td style="color:var(--warn);font-size:12px;">Excess reduces outstanding balance</td></tr>
+        <tr><td>SC-15–17</td><td>✅ In arrears 0–90 days</td><td style="color:var(--text)">Successfully paid prolongation fee TZSxxx for 30 days. Outstanding: TZSxx due dd/mm/yy</td><td style="color:var(--accent);font-size:12px;">Allowed up to 90 days PDD</td></tr>
+        <tr><td>SC-18</td><td>❌ In arrears 90+ days</td><td style="color:var(--text)">Your account is over 90 days in arrears. You can't prolong. Please pay your debt of TZSxx before prolonging.</td><td style="color:var(--accent3);font-size:12px;">Blocked — must pay full debt</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- TAB: Balance & Due Date -->
+  <div id="tab-balance" class="tab-content" style="padding: 32px 60px;">
+    <div class="grid-2" style="gap: 32px; background: transparent;">
+      <div>
+        <p style="font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 16px;">Option 3 — Check Balance</p>
+        <div class="scenario">
+          <div class="scenario-id">SC-19 — Correct PIN entered</div>
+          <p class="en">The total amount is TZSxxxxx, charges TZSxxxxxx. The available facility is TZSxxxxxx</p>
+          <p class="sw">Jumla ya kiasi ulichokopa ni Tshxxxx Makato Tshxxxxxx. Kiasi unachoweza kukopa ni Tshxxxxxxxxx</p>
+        </div>
+        <div class="scenario" style="border-left-color: var(--accent3);">
+          <div class="scenario-id" style="color: var(--accent3);">SC-20 — Wrong PIN entered</div>
+          <p class="en">You have entered the wrong PIN. Only 5 attempts are allowed before PIN gets blocked. Please try again.</p>
+          <p class="sw">Namba ya siri uliyoingiza sio sahihi. Ukiingiza namba ya siri mara 5 unafungiwa huduma</p>
+        </div>
+        <div style="margin-top: 16px; background: var(--surface); padding: 14px;">
+          <p style="font-family: var(--font-mono); font-size: 10px; color: var(--warn); margin-bottom: 6px;">⚠ Technical Note</p>
+          <p style="font-size: 12px; color: var(--text-muted);">Since REVOLVER is revolving (multiple active loans possible), system must decide how to aggregate/present balance. Recommended: show total outstanding across all active loans + total available remaining facility.</p>
+        </div>
+      </div>
+      <div>
+        <p style="font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 16px;">Option 4 — Check Due Date</p>
+        <div class="scenario">
+          <div class="scenario-id">SC-21 — Active loan exists</div>
+          <p class="en">Your loan of TZSxx is due on dd/mm/yyy</p>
+          <p class="sw">Mkopo wako wa Shxxx unatakiwa kulipwa dd/mm/yyy</p>
+          <p style="margin-top: 8px; font-size: 12px; color: var(--text-dim);">Also delivered as Inbox SMS in both EN and SW.</p>
+        </div>
+        <div style="margin-top: 20px;">
+          <p style="font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 16px;">Option 5 — Mini Statement</p>
+          <div class="scenario">
+            <div class="scenario-id">SC-22 — Statement requested</div>
+            <p class="en">USSD: "Your request has been submitted"</p>
+            <p class="sw">Ombi lako linafanyiwa kazi</p>
+            <p style="margin-top: 8px; font-size: 12px; color: var(--text-muted);">SMS delivers last 5 transactions (max) in format:</p>
+            <div class="code-block" style="margin-top: 8px; font-size: 11px;">
+1. DDMMYY DR TZS xxxx
+2. DDMMYY DR TZS xxxx
+3. DDMMYY CR TZS xxx
+4. DDMMYY DR TZS xxx
+5. DDMMYY CR TZS xxx</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: Account Management -->
+  <div id="tab-account" class="tab-content" style="padding: 32px 60px;">
+    <div class="grid-2" style="gap: 32px; background: transparent;">
+      <div>
+        <p style="font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 16px;">Option 6 — Change PIN</p>
+        <div style="display: flex; flex-direction: column; gap: 0;">
+          <div style="display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);">
+            <div style="font-family: var(--font-mono); font-size: 11px; color: var(--accent2); width: 60px; flex-shrink:0;">Step 1</div>
+            <div style="font-size: 13px; color: var(--text-muted);">Client selects "Change PIN" → Prompted to enter Old PIN</div>
+          </div>
+          <div style="display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);">
+            <div style="font-family: var(--font-mono); font-size: 11px; color: var(--accent2); width: 60px; flex-shrink:0;">Step 2</div>
+            <div style="font-size: 13px; color: var(--text-muted);">Enter New PIN (4 digits)</div>
+          </div>
+          <div style="display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);">
+            <div style="font-family: var(--font-mono); font-size: 11px; color: var(--accent2); width: 60px; flex-shrink:0;">Step 3</div>
+            <div style="font-size: 13px; color: var(--text-muted);">Re-enter New PIN to confirm</div>
+          </div>
+          <div class="scenario" style="margin-top: 12px;">
+            <div class="scenario-id">SC-24 — Success</div>
+            <p class="en">You have successfully changed your PIN</p>
+            <p class="sw">Umefanikiwa kubadilisha namba ya siri</p>
+          </div>
+          <div class="scenario" style="border-left-color: var(--accent3); margin-top: 8px;">
+            <div class="scenario-id" style="color: var(--accent3);">SC-25 — Wrong old PIN</div>
+            <p class="en">You have entered wrong old PIN</p>
+            <p class="sw">Namba ya siri uliyoingiza sio sahihi</p>
+          </div>
+        </div>
+      </div>
+      <div>
+        <p style="font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 16px;">Option 7 — Change Language</p>
+        <div class="scenario" style="margin-bottom: 8px;">
+          <div class="scenario-id">SC-26 — Switch to Kiswahili</div>
+          <p class="en">Select "7" → Select "2. Kiswahili"</p>
+          <p class="sw">Umefanikiwa kubadilisha lugha</p>
+        </div>
+        <div class="scenario">
+          <div class="scenario-id">SC-27 — Switch to English</div>
+          <p>Select "7" → Select "1. English"</p>
+          <p style="color: var(--accent); font-family: var(--font-mono); font-size: 11px;">You have successfully changed the language</p>
+        </div>
+        <div style="margin-top: 20px;">
+          <p style="font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 12px;">Option 8 — Service Terms</p>
+          <div class="scenario">
+            <div class="scenario-id">SC-28</div>
+            <p class="en">Read the terms and conditions on website: www.kopabayport.co.tz</p>
+            <p class="sw">Soma vigezo na masharti kwenye tovuti www.kopabayport.co.tz</p>
+          </div>
+        </div>
+        <div style="margin-top: 20px; background: var(--surface); padding: 14px;">
+          <p style="font-family: var(--font-mono); font-size: 10px; color: var(--accent); margin-bottom: 6px;">Technical Note — Language Persistence</p>
+          <p style="font-size: 12px; color: var(--text-muted);">Language preference must be stored per client in the database and applied to all future sessions (USSD, WhatsApp, and SMS). Default: Kiswahili.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: Registration Flow -->
+  <div id="tab-registration" class="tab-content" style="padding: 32px 60px;">
+    <div class="flow-tree" style="max-width: 700px;">
+      <div class="flow-node">
+        <div class="flow-line"><div class="flow-dot orange"></div><div class="flow-vert"></div></div>
+        <div class="flow-content">
+          <div class="flow-label">Employer Onboarding (KAO)</div>
+          <div class="flow-msg">Sales team signs agreement with employer. HR provides employee list: name, contract type, basic pay, net pay, NIDA, mobile number.</div>
+        </div>
+      </div>
+      <div class="flow-node">
+        <div class="flow-line"><div class="flow-dot blue"></div><div class="flow-vert"></div></div>
+        <div class="flow-content">
+          <div class="flow-label">Agent Registration (Web Portal)</div>
+          <div class="flow-msg">Agent logs into registration portal → feeds client employment details → assigns loan size (20% of net pay for REVOLVER) → submits for QC approval.</div>
+        </div>
+      </div>
+      <div class="flow-node">
+        <div class="flow-line"><div class="flow-dot warn"></div><div class="flow-vert"></div></div>
+        <div class="flow-content">
+          <div class="flow-label">Quality Control Review</div>
+          <div class="flow-msg">QC user logs in → verifies client details → runs CRB (D&B) check → Approves or Declines. Agent can edit client record before QC approval.</div>
+        </div>
+      </div>
+      <div class="flow-node">
+        <div class="flow-line"><div class="flow-dot"></div><div class="flow-vert"></div></div>
+        <div class="flow-content">
+          <div class="flow-label">Registration SMS (on Approval)</div>
+          <div class="flow-msg">Two-part SMS to client mobile number:</div>
+          <div style="background: var(--surface); padding: 14px; margin-top: 8px; border-left: 2px solid var(--accent2);">
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;"><strong style="color: var(--text);">EN Part 1:</strong> Your Nipeboost registration is complete. You can dial *150*49# and request loan for up to TZSxxxxx. Press 1 to accept T&Cs.</p>
+            <p style="font-size: 12px; color: var(--text-muted);"><strong style="color: var(--text);">EN Part 2:</strong> Your Nipeboost ID is xxxx and your default PIN xxxx. Please change it on your first login.</p>
+          </div>
+          <div style="background: var(--surface); padding: 14px; margin-top: 8px; border-left: 2px solid var(--accent);">
+            <p style="font-size: 11px; color: var(--accent); font-family: var(--font-mono);">SW: Usajili wako wa NIPEBOOST umekamilika. Piga *150*49# kuomba mkopo wa hadi Sh xxx. Namba ya siri ni xxxx, badilisha namba ya siri ukishaitumia mara ya kwanza. Wakati wa kulipa deni utatumia namba ya kumbukumbu xxxx. Kusoma vigezo na masharti bofya https://bit.ly/3P7JA84</p>
+          </div>
+        </div>
+      </div>
+      <div class="flow-node">
+        <div class="flow-line"><div class="flow-dot"></div></div>
+        <div class="flow-content">
+          <div class="flow-label">Client Activates</div>
+          <div class="flow-msg">Client dials *150*49# (or opens WhatsApp) → changes default PIN on first login → can now apply for loans.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 5: API ENDPOINTS ===== -->
+<section id="api">
+  <div class="section-header">
+    <span class="section-number">05 —</span>
+    <h2>API Endpoints — Technical Specification</h2>
+  </div>
+  <div class="section-body">
+    <div class="grid-2" style="gap: 40px; background: transparent;">
+      <div>
+        <p style="font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 16px;">Core Loan Endpoints</p>
+        <div class="endpoint">
+          <span class="method post">POST</span>
+          <div>
+            <div class="endpoint-path">/api/v1/loans/apply</div>
+            <div class="endpoint-desc">Create a new loan request. Validates eligibility, amount limits, account status. Triggers B2C disbursement on approval.</div>
+          </div>
+        </div>
+        <div class="endpoint">
+          <span class="method get">GET</span>
+          <div>
+            <div class="endpoint-path">/api/v1/loans/balance/{clientId}</div>
+            <div class="endpoint-desc">Return current outstanding balance, charges, and available facility for a client.</div>
+          </div>
+        </div>
+        <div class="endpoint">
+          <span class="method get">GET</span>
+          <div>
+            <div class="endpoint-path">/api/v1/loans/due-date/{clientId}</div>
+            <div class="endpoint-desc">Return next repayment due date and amount for the client's active loan.</div>
+          </div>
+        </div>
+        <div class="endpoint">
+          <span class="method post">POST</span>
+          <div>
+            <div class="endpoint-path">/api/v1/loans/prolong</div>
+            <div class="endpoint-desc">Initiate loan prolongation. Validates arrears status (blocked at 90+ days). Extends due date by 30 days on fee payment confirmation.</div>
+          </div>
+        </div>
+        <div class="endpoint">
+          <span class="method get">GET</span>
+          <div>
+            <div class="endpoint-path">/api/v1/loans/statement/{clientId}</div>
+            <div class="endpoint-desc">Return last 5 transactions (DR/CR) for mini statement. Triggers SMS delivery to client mobile number.</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <p style="font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 16px;">Auth, Client & Repayment Endpoints</p>
+        <div class="endpoint">
+          <span class="method post">POST</span>
+          <div>
+            <div class="endpoint-path">/api/v1/auth/pin/verify</div>
+            <div class="endpoint-desc">Validate client PIN. Returns auth token on success. Tracks failed attempts (lock at 5).</div>
+          </div>
+        </div>
+        <div class="endpoint">
+          <span class="method put">PUT</span>
+          <div>
+            <div class="endpoint-path">/api/v1/auth/pin/change</div>
+            <div class="endpoint-desc">Change client PIN. Requires old PIN + new PIN + confirmation. Validates old PIN server-side.</div>
+          </div>
+        </div>
+        <div class="endpoint">
+          <span class="method put">PUT</span>
+          <div>
+            <div class="endpoint-path">/api/v1/clients/{clientId}/language</div>
+            <div class="endpoint-desc">Update client language preference (EN/SW). Applied globally across USSD, WhatsApp, and SMS.</div>
+          </div>
+        </div>
+        <div class="endpoint">
+          <span class="method post">POST</span>
+          <div>
+            <div class="endpoint-path">/api/v1/payments/c2b/callback</div>
+            <div class="endpoint-desc">Webhook for MNO C2B payment notifications. Processes repayments, updates loan balance, triggers confirmation SMS.</div>
+          </div>
+        </div>
+        <div class="endpoint">
+          <span class="method post">POST</span>
+          <div>
+            <div class="endpoint-path">/api/v1/ussd/callback</div>
+            <div class="endpoint-desc">USSD gateway callback handler. Routes menu selections, manages session state, returns appropriate USSD response strings.</div>
+          </div>
+        </div>
+        <div class="endpoint">
+          <span class="method post">POST</span>
+          <div>
+            <div class="endpoint-path">/api/v1/whatsapp/webhook</div>
+            <div class="endpoint-desc">WhatsApp Cloud API inbound webhook. Handles message events, session routing, and interactive message responses.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 32px; background: var(--surface); padding: 24px;">
+      <p style="font-family: var(--font-mono); font-size: 10px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 16px;">// Sample USSD Callback Request / Response</p>
+      <div class="grid-2" style="gap: 24px; background: transparent;">
+        <div>
+          <p style="font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); margin-bottom: 8px;">REQUEST (from USSD gateway)</p>
+          <div class="code-block">{
+  <span class="s">"sessionId"</span>: <span class="n">"ABC123"</span>,
+  <span class="s">"serviceCode"</span>: <span class="n">"*150*49#"</span>,
+  <span class="s">"phoneNumber"</span>: <span class="n">"+255712345678"</span>,
+  <span class="s">"text"</span>: <span class="n">"1*200000"</span>,
+  <span class="c">// "1" = menu, "200000" = amount</span>
+  <span class="s">"networkCode"</span>: <span class="n">"VODACOM"</span>
+}</div>
+        </div>
+        <div>
+          <p style="font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); margin-bottom: 8px;">RESPONSE (CON = continue, END = terminate)</p>
+          <div class="code-block"><span class="c">// Continue session (awaiting PIN)</span>
+<span class="n">CON</span> You have requested a loan of
+TZS 200,000, please enter PIN
+to confirm.
+
+<span class="c">// End session (loan approved)</span>
+<span class="n">END</span> You have received a loan of
+TZS 200,000. Repayment: TZS
+220,000. Due: 27/05/2026.
+Asante kwa kutumia NIPEBOOST.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 6: BACK OFFICE ===== -->
+<section id="backoffice">
+  <div class="section-header">
+    <span class="section-number">06 —</span>
+    <h2>Back Office — Module Requirements</h2>
+  </div>
+  <div class="section-body">
+    <div class="arch-diagram">
+      <div class="arch-node accent-green">
+        <div class="arch-node-label">Module 1</div>
+        <div class="arch-node-name">Agent (Registration)</div>
+        <p>Register clients with employer-provided data. Assign loan limits (20%–60% net pay). Submit to QC. Edit only before QC approval.</p>
+      </div>
+      <div class="arch-node accent-blue">
+        <div class="arch-node-label">Module 2</div>
+        <div class="arch-node-name">Quality Control</div>
+        <p>Verify client data. Run CRB check via D&B API. Approve or decline registration. Manage client suspension/reinstatement.</p>
+      </div>
+      <div class="arch-node accent-warn">
+        <div class="arch-node-label">Module 3</div>
+        <div class="arch-node-name">Customer Care</div>
+        <p>View all clients and batches. Monitor loans, disbursements, repayments, transactions, manual repayments, and bulk adjustments.</p>
+      </div>
+      <div class="arch-node accent-orange">
+        <div class="arch-node-label">Module 4</div>
+        <div class="arch-node-name">Finance</div>
+        <p>All Customer Care views + initiate: adjust repayments (wrong client ID), manual posting, bulk file uploads (principal/interest/penalty adjustments).</p>
+      </div>
+      <div class="arch-node">
+        <div class="arch-node-label">Module 5</div>
+        <div class="arch-node-name" style="color: var(--text);">Administrator</div>
+        <p>Set loan limits. Configure fees (penalty, prolongation). Manage portal users. Initiate employer creation. Cancel disbursements. View SMS logs & audit logs. Reset client PINs.</p>
+      </div>
+      <div class="arch-node">
+        <div class="arch-node-label">Module 6</div>
+        <div class="arch-node-name" style="color: var(--text);">Authorizer</div>
+        <p>4-eyes approval layer. Approves: employer creation, product configuration, disbursement cancellations, repayment adjustments, manual postings, bulk file uploads.</p>
+      </div>
+    </div>
+
+    <div style="background: var(--surface); padding: 20px;">
+      <p style="font-family: var(--font-mono); font-size: 10px; color: var(--warn); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 12px;">⚠ Role Separation Requirements</p>
+      <ul class="spec-list">
+        <li>Every sensitive operation (financial adjustments, employer setup, product config) requires an initiator + a separate authorizer — no single user can complete both steps</li>
+        <li>System admin (super-admin) created exclusively by the system developer — not creatable via the portal</li>
+        <li>Complete audit logs for all user actions with timestamp, user ID, IP address, and action detail</li>
+        <li>Agent can only view/edit their own registrations. Customer Care and Finance have read-only access to all client data. Only Admin/Authorizer can modify system configuration.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 7: COLLECTION & SMS ===== -->
+<section id="collection">
+  <div class="section-header">
+    <span class="section-number">07 —</span>
+    <h2>Collection Process & Automated SMS</h2>
+  </div>
+  <div class="section-body">
+    <table class="data-table" style="background: var(--surface); margin-bottom: 32px;">
+      <thead>
+        <tr>
+          <th>Stage</th>
+          <th>Trigger (Days)</th>
+          <th>Action</th>
+          <th>SMS Message (Kiswahili)</th>
+          <th>WhatsApp</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="tag tag-green">Pre-collection</span></td>
+          <td>Day 1–7 after disbursement</td>
+          <td>Education call by CC agents</td>
+          <td style="color: var(--text-muted); font-size: 12px;">—</td>
+          <td><span class="tag tag-green">Education msg</span></td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-blue">BDD – 4 days</span></td>
+          <td>4 days before due</td>
+          <td>Automated SMS + CC call</td>
+          <td style="color: var(--accent); font-family: var(--font-mono); font-size: 11px;">Unatakiwa kulipa Sh xxxxxx kabla ya tarehe dd/mm/yy Namba yako ya malipo ni xxxx</td>
+          <td><span class="tag tag-blue">Reminder msg</span></td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-blue">BDD – 3,2,1 days</span></td>
+          <td>3, 2, 1 days before due</td>
+          <td>Automated SMS</td>
+          <td style="color: var(--accent); font-family: var(--font-mono); font-size: 11px;">Unatakiwa kulipa Sh xxxxxx kabla ya tarehe dd/mm/yy Namba yako ya malipo ni xxxx</td>
+          <td><span class="tag tag-blue">Reminder msg</span></td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-warn">On DD (Day 0)</span></td>
+          <td>On due date</td>
+          <td>SMS + CC call</td>
+          <td style="color: var(--accent); font-family: var(--font-mono); font-size: 11px;">Unatakiwa kulipa Shxxxxx leo au angalia kwenye menu kiasi cha kulipa ili kusogeza muda wa kulipa deni kwa siku 30 mbele. Namba yako ya malipo ni xxxxx</td>
+          <td><span class="tag tag-warn">Due today msg</span></td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-orange">PDD1 – Day 1</span></td>
+          <td>1 day past due</td>
+          <td>Automated SMS</td>
+          <td style="color: var(--accent); font-family: var(--font-mono); font-size: 11px;">Deni lako la NipeBoost limepitiliza siku 1. Lipa Shxxxxx...</td>
+          <td><span class="tag tag-orange">Arrears msg</span></td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-orange">PDD1 – Every 15 days</span></td>
+          <td>Days 15, 30, 45, 60, 75, 90 PDD</td>
+          <td>Automated SMS + CC call (every 15 days, 2 calls)</td>
+          <td style="color: var(--accent); font-family: var(--font-mono); font-size: 11px;">Deni lako la NipeBoost limepitiliza siku {N}. Lipa Shxxxxx... au angalia kwenye menu kusogeza muda</td>
+          <td><span class="tag tag-orange">Escalating</span></td>
+        </tr>
+        <tr>
+          <td><span class="tag" style="background:rgba(255,0,0,0.1);color:#ff4444;border:1px solid rgba(255,0,0,0.2);">PDD2 – 90–120 days</span></td>
+          <td>90–120 days past due</td>
+          <td>KAO site visit. HR assistance. PTP letter. NMB direct debit form.</td>
+          <td style="color: var(--accent); font-family: var(--font-mono); font-size: 11px;">Deni lako la NipeBoost limepitiliza miezi 3... Kuepuka hatua za kisheria na kupelekwa taarifa zako CRB lipa Shxxxxxx mara moja.</td>
+          <td><span class="tag" style="background:rgba(255,0,0,0.1);color:#ff4444;border:1px solid rgba(255,0,0,0.2);">Legal warning</span></td>
+        </tr>
+        <tr>
+          <td><span class="tag" style="background:rgba(255,0,0,0.2);color:#ff2222;border:1px solid rgba(255,0,0,0.3);">PDD3 – 120+ days</span></td>
+          <td>120+ days past due</td>
+          <td>CRB negative listing (D&B). Client blacklisted from financial services.</td>
+          <td style="color: var(--text-muted); font-size: 12px;">CRB listing notification + demand notice</td>
+          <td><span class="tag" style="background:rgba(255,0,0,0.2);color:#ff2222;border:1px solid rgba(255,0,0,0.3);">CRB listed</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="background: var(--surface); padding: 20px; border-left: 2px solid var(--accent2);">
+      <p style="font-family: var(--font-mono); font-size: 10px; color: var(--accent2); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 12px;">Automated SMS / WhatsApp Engine Requirements</p>
+      <ul class="spec-list">
+        <li>Scheduler job runs daily to identify loans in each collection stage and dispatch messages</li>
+        <li>Messages must be sent in client's stored language preference (EN or SW)</li>
+        <li>All messages must include: amount due, payment reference number, and prolongation fee option where applicable</li>
+        <li>Admin portal must show full SMS log per client with status (sent/failed) and ability to resend</li>
+        <li>WhatsApp notifications use pre-approved HSM (Highly Structured Message) templates registered with Meta</li>
+        <li>De-duplication: do not send duplicate messages if a payment was already received for the day</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 8: NON-FUNCTIONAL ===== -->
+<section id="nfr">
+  <div class="section-header">
+    <span class="section-number">08 —</span>
+    <h2>Non-Functional Requirements</h2>
+  </div>
+  <div class="section-body">
+    <div class="grid-3" style="margin-bottom: 32px;">
+      <div class="card">
+        <div class="card-title">Performance</div>
+        <ul class="spec-list" style="font-size: 13px;">
+          <li>USSD response time ≤ 2 seconds per interaction</li>
+          <li>WhatsApp message delivery ≤ 3 seconds</li>
+          <li>Loan disbursement via B2C API ≤ 60 seconds end-to-end</li>
+          <li>System must handle concurrent USSD sessions for all registered clients</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Security</div>
+        <ul class="spec-list" style="font-size: 13px;">
+          <li>4-digit PIN with max 5 failed attempts before lockout</li>
+          <li>All API communication over HTTPS/TLS 1.2+</li>
+          <li>PINs stored as bcrypt hashes — never in plaintext</li>
+          <li>WhatsApp webhook signature validation (X-Hub-Signature-256)</li>
+          <li>Role-based access control (RBAC) on all back office modules</li>
+          <li>Full audit logging of all financial operations</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Availability & Compliance</div>
+        <ul class="spec-list" style="font-size: 13px;">
+          <li>99.5% uptime SLA for USSD and WhatsApp channels</li>
+          <li>Compliance with Bank of Tanzania (BoT) regulations</li>
+          <li>CRB integration with licensed D&B bureau only</li>
+          <li>Data residency: all client data stored in Tanzania</li>
+          <li>MNO wallet APIs: Mpesa, TigoPesa, AirtelMoney — all three required</li>
+          <li>Governing law: United Republic of Tanzania</li>
+        </ul>
+      </div>
+    </div>
+
+    <div style="background: var(--surface); padding: 24px; border-left: 2px solid var(--accent);">
+      <p style="font-family: var(--font-mono); font-size: 10px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 16px;">Tech Stack Recommendations</p>
+      <div class="grid-3" style="gap: 24px; background: transparent;">
+        <div>
+          <p style="font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); margin-bottom: 8px;">Backend API</p>
+          <ul class="spec-list" style="font-size: 12px;">
+            <li>Node.js / Python (FastAPI or Django) or Java Spring Boot</li>
+            <li>PostgreSQL for transactional data</li>
+            <li>Redis for USSD session state and rate limiting</li>
+            <li>Message queue (RabbitMQ/SQS) for async SMS/disbursement jobs</li>
+          </ul>
+        </div>
+        <div>
+          <p style="font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); margin-bottom: 8px;">Integrations</p>
+          <ul class="spec-list" style="font-size: 12px;">
+            <li>WhatsApp Cloud API (Meta for Developers)</li>
+            <li>USSD Gateway (MNO-provided or third-party like Africa's Talking)</li>
+            <li>Mpesa Daraja API (B2C + C2B)</li>
+            <li>TigoPesa & AirtelMoney APIs</li>
+            <li>D&B CRB API (Tanzania)</li>
+          </ul>
+        </div>
+        <div>
+          <p style="font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); margin-bottom: 8px;">Back Office Frontend</p>
+          <ul class="spec-list" style="font-size: 12px;">
+            <li>React.js or Vue.js SPA</li>
+            <li>Role-based routing enforced client AND server side</li>
+            <li>Responsive — accessible on tablets and desktop</li>
+            <li>Export: CSV/Excel reports for Finance module</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="left">
+    <div style="font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px;">REVOLVER — Technical Requirements</div>
+    <div>Nipeboost / Bayport Tanzania — Device Financing Revolving Credit</div>
+  </div>
+  <div class="right">
+    <div>Version 1.0 — April 2026</div>
+    <div>Governing law: United Republic of Tanzania</div>
+    <div>USSD: <span class="highlight">*150*49#</span> | WhatsApp Business API</div>
+  </div>
+</footer>
+
+<script>
+  function switchTab(tabId) {
+    // Update tab buttons
+    document.querySelectorAll('#ussd-tabs .tab').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+
+    // Update tab content
+    document.querySelectorAll('#ussd .tab-content').forEach(c => c.classList.remove('active'));
+    document.getElementById('tab-' + tabId).classList.add('active');
+  }
+
+  // Smooth scroll for nav links
+  document.querySelectorAll('nav a').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // Animate on scroll
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('section').forEach(s => {
+    s.style.opacity = '0';
+    s.style.transform = 'translateY(20px)';
+    s.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    observer.observe(s);
+  });
+  // Immediately show first visible section
+  document.querySelectorAll('section')[0].style.opacity = '1';
+  document.querySelectorAll('section')[0].style.transform = 'translateY(0)';
+</script>
+</body>
+</html>

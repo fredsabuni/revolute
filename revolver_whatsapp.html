@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REVOLVER — WhatsApp Flow Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'Google Sans',system-ui,sans-serif;overflow:hidden}
+
+/* ═══════════════════════════════════════════════
+   APP SHELL
+═══════════════════════════════════════════════ */
+.app{display:flex;height:100vh;background:#111b21}
+
+/* ═══════════════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════════════ */
+.sidebar{width:300px;flex-shrink:0;background:#111b21;border-right:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column;overflow:hidden}
+.sb-head{background:#202c33;padding:13px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.06)}
+.sb-logo{width:38px;height:38px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,#00c896,#006b5a);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff}
+.sb-brand{font-size:14px;font-weight:700;color:#e9edef}
+.sb-tagline{font-size:11px;color:rgba(255,255,255,.35);margin-top:2px}
+.sb-body{flex:1;overflow-y:auto}.sb-body::-webkit-scrollbar{width:0}
+.sb-label{font-size:10px;color:rgba(255,255,255,.28);text-transform:uppercase;letter-spacing:.12em;padding:14px 16px 5px}
+.sc-row{padding:10px 16px;display:flex;align-items:center;gap:11px;cursor:pointer;transition:background .12s;border-bottom:.5px solid rgba(255,255,255,.04);position:relative}
+.sc-row:hover{background:rgba(255,255,255,.04)}
+.sc-row.active{background:rgba(0,168,132,.1)}
+.sc-row.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:#00a884;border-radius:0 2px 2px 0}
+.sc-row.dim{opacity:.38;cursor:default;pointer-events:none}
+.sc-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.sc-name{font-size:13px;font-weight:600;color:#e9edef;line-height:1.3}
+.sc-hint{font-size:11px;color:rgba(255,255,255,.35);margin-top:2px}
+.flow-panel{flex-shrink:0;border-top:1px solid rgba(255,255,255,.06);padding:13px 16px 16px}
+.flow-title{font-size:10px;color:rgba(255,255,255,.28);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px}
+.fp-step{display:flex;align-items:center;gap:9px;padding:4px 0;font-size:12px;color:rgba(255,255,255,.25)}
+.fp-step.done{color:rgba(255,255,255,.5)}
+.fp-step.active{color:#00a884;font-weight:600}
+.fp-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.1);flex-shrink:0}
+.fp-step.done .fp-dot{background:rgba(255,255,255,.3)}
+.fp-step.active .fp-dot{background:#00a884;box-shadow:0 0 0 3px rgba(0,168,132,.18)}
+
+/* ═══════════════════════════════════════════════
+   CHAT PANEL
+═══════════════════════════════════════════════ */
+.chat-panel{flex:1;display:flex;flex-direction:column;background:#0b141a;overflow:hidden;position:relative}
+.wa-hdr{background:#202c33;padding:10px 20px;display:flex;align-items:center;gap:13px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.05)}
+.av{width:40px;height:40px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,#00c896,#006b5a);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;position:relative}
+.av-dot{position:absolute;bottom:1px;right:1px;width:9px;height:9px;border-radius:50%;background:#4ade80;border:2px solid #202c33}
+.wa-name{color:#e9edef;font-size:15px;font-weight:600;line-height:1.2}
+.wa-sub{color:rgba(255,255,255,.45);font-size:12px;margin-top:1px}
+.hdr-actions{margin-left:auto;display:flex;gap:20px;color:rgba(255,255,255,.55);font-size:19px;cursor:pointer}
+
+/* scroll container */
+.chat{flex:1;overflow-y:auto;overflow-x:hidden;min-height:0;background-color:#0b141a;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cg fill='%23182229' fill-opacity='.5'%3E%3Ccircle cx='40' cy='40' r='2'/%3E%3C/g%3E%3C/svg%3E")}
+.chat::-webkit-scrollbar{width:5px}
+.chat::-webkit-scrollbar-thumb{background:rgba(255,255,255,.09);border-radius:3px}
+
+/* centered column */
+.chat-inner{max-width:780px;margin:0 auto;padding:20px 28px 12px;display:flex;flex-direction:column;gap:5px;min-height:100%}
+
+/* ── collapse animation ── */
+@keyframes collapseOut{0%{opacity:1;max-height:600px;transform:translateY(0)}100%{opacity:0;max-height:0;padding:0;margin:0;transform:translateY(-6px)}}
+.collapsing{animation:collapseOut .32s ease forwards;overflow:hidden;pointer-events:none}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeInUp .22s ease both}
+
+/* stage summary pill */
+.stage-pill{align-self:center;background:rgba(0,168,132,.1);border:1px solid rgba(0,168,132,.22);border-radius:20px;padding:6px 16px;display:flex;align-items:center;gap:7px;font-size:12px;color:#00a884;margin:6px 0;cursor:default}
+.stage-pill .sp-icon{font-size:14px}
+
+/* date chip + system */
+.date-chip{align-self:center;background:rgba(17,27,33,.9);border:1px solid rgba(255,255,255,.06);padding:4px 13px;border-radius:10px;font-size:11px;color:rgba(255,255,255,.45);margin:4px 0}
+.sys-msg{align-self:center;background:rgba(17,27,33,.9);border:1px solid rgba(255,255,255,.06);padding:5px 15px;border-radius:10px;font-size:11px;color:rgba(255,255,255,.4);max-width:80%;line-height:1.55;margin:2px 0;text-align:center}
+
+/* ═══════════════════════════════════════════════
+   BUBBLES
+═══════════════════════════════════════════════ */
+.row{display:flex;flex-direction:column;margin-bottom:1px}
+.row.out{align-items:flex-end}.row.in{align-items:flex-start}
+.bub{max-width:70%;padding:9px 13px 6px;border-radius:10px;word-break:break-word}
+.bub.in{background:#202c33;border-top-left-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.22)}
+.bub.out{background:#005c4b;border-bottom-right-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.22)}
+.bt{font-size:14px;color:#e9edef;line-height:1.56;display:block}
+.bt b{font-weight:600}.bt a{color:#53bdeb}.bt small{font-size:12px;color:rgba(255,255,255,.42)}
+.bf{display:flex;align-items:center;justify-content:flex-end;gap:4px;margin-top:3px}
+.bf span{font-size:10px;color:rgba(255,255,255,.32)}.bf .tick{color:#53bdeb}
+
+/* ── typing ── */
+.typing-row{display:flex;margin-bottom:2px}
+.typing-bub{background:#202c33;border-radius:2px 10px 10px 10px;padding:11px 15px;display:flex;gap:5px;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.td{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.28);animation:tdp 1.3s infinite}
+.td:nth-child(2){animation-delay:.18s}.td:nth-child(3){animation-delay:.36s}
+@keyframes tdp{0%,70%,100%{transform:translateY(0);opacity:.5}35%{transform:translateY(-5px);opacity:1}}
+
+/* ═══════════════════════════════════════════════
+   MENU CARD
+═══════════════════════════════════════════════ */
+.mc{background:#202c33;border-radius:2px 12px 12px 12px;overflow:hidden;max-width:78%;box-shadow:0 2px 8px rgba(0,0,0,.28)}
+.mc-head{background:#00796b;padding:11px 16px;color:#fff;font-size:14px;font-weight:600}
+.mc-item{padding:12px 16px;border-bottom:.5px solid rgba(255,255,255,.07);font-size:14px;color:#e9edef;cursor:pointer;display:flex;align-items:center;gap:11px;transition:background .1s;user-select:none}
+.mc-item:last-of-type{border-bottom:none}
+.mc-item:hover{background:rgba(255,255,255,.05)}.mc-item:active{background:rgba(0,168,132,.1)}
+.mn{width:22px;height:22px;border-radius:50%;background:#00a884;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mc-foot{padding:5px 14px 7px;display:flex;justify-content:flex-end;gap:4px}
+.mc-foot span{font-size:10px;color:rgba(255,255,255,.28)}
+
+/* ═══════════════════════════════════════════════
+   KYC CARD
+═══════════════════════════════════════════════ */
+.kyc-card{background:#202c33;border-radius:2px 12px 12px 12px;overflow:hidden;max-width:82%;box-shadow:0 2px 8px rgba(0,0,0,.28)}
+.kyc-head{background:#00796b;padding:13px 16px;color:#fff}
+.kyc-head h4{font-size:15px;font-weight:700}
+.kyc-head p{font-size:12px;opacity:.78;margin-top:3px}
+.kyc-row{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:.5px solid rgba(255,255,255,.07);font-size:13px}
+.kyc-row:last-child{border-bottom:none}
+.kyc-row .k{color:rgba(255,255,255,.42);flex-shrink:0;margin-right:12px}
+.kyc-row .v{font-weight:600;color:#e9edef;text-align:right}
+.kyc-row .v.green{color:#00a884}
+.kyc-row.editable{cursor:pointer}.kyc-row.editable:hover{background:rgba(255,255,255,.04)}
+.kv-wrap{display:flex;align-items:center;justify-content:flex-end;flex:1}
+.kv-input{border:none;border-bottom:1.5px solid #00a884;outline:none;font-size:13px;font-weight:600;color:#e9edef;text-align:right;background:transparent;font-family:'Google Sans',system-ui,sans-serif;max-width:200px}
+.kyc-acts{display:grid;grid-template-columns:1fr 1fr;border-top:.5px solid rgba(255,255,255,.08)}
+.kyc-btn{padding:14px;font-size:14px;font-weight:700;cursor:pointer;border:none;background:transparent;text-align:center;transition:background .1s;font-family:'Google Sans',system-ui,sans-serif}
+.kyc-btn:hover{background:rgba(255,255,255,.04)}
+.kyc-btn.ok{color:#00a884;border-right:.5px solid rgba(255,255,255,.08)}.kyc-btn.no{color:#ef4444}
+
+/* ═══════════════════════════════════════════════
+   LOAN CARD
+═══════════════════════════════════════════════ */
+.lc{background:#202c33;border-radius:2px 12px 12px 12px;overflow:hidden;max-width:72%;box-shadow:0 2px 8px rgba(0,0,0,.28)}
+.lc-head{background:#00a884;padding:12px 16px;color:#fff}
+.lc-head h4{font-size:15px;font-weight:700}.lc-head p{font-size:12px;opacity:.78;margin-top:3px}
+.lc-body{padding:10px 16px}
+.lr{display:flex;justify-content:space-between;padding:7px 0;border-bottom:.5px solid rgba(255,255,255,.07);font-size:13px}
+.lr:last-child{border-bottom:none}
+.lr .lk{color:rgba(255,255,255,.42)}.lr .lv{font-weight:600;color:#e9edef}
+.lr .lv.g{color:#00a884}.lr .lv.a{color:#f59e0b}
+.lc-acts{display:grid;grid-template-columns:1fr 1fr;border-top:.5px solid rgba(255,255,255,.08)}
+.lc-btn{padding:13px;font-size:14px;font-weight:700;cursor:pointer;border:none;background:transparent;text-align:center;transition:background .1s;font-family:'Google Sans',system-ui,sans-serif}
+.lc-btn:hover{background:rgba(255,255,255,.04)}
+.lc-btn.ok{color:#00a884;border-right:.5px solid rgba(255,255,255,.08)}.lc-btn.no{color:#ef4444}
+
+/* ═══════════════════════════════════════════════
+   STATEMENT CARD
+═══════════════════════════════════════════════ */
+.sc{background:#202c33;border-radius:2px 12px 12px 12px;overflow:hidden;max-width:78%;box-shadow:0 2px 8px rgba(0,0,0,.28)}
+.sc-head{background:#00796b;padding:10px 16px;color:#fff;font-size:14px;font-weight:600;display:flex;justify-content:space-between;align-items:center}
+.sc-head small{font-size:11px;opacity:.72;font-weight:400}
+.sc-row{display:flex;align-items:center;gap:11px;padding:9px 16px;border-bottom:.5px solid rgba(255,255,255,.07)}
+.sc-row:last-of-type{border-bottom:none}
+.si{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.si.cr{background:rgba(0,168,132,.14)}.si.dr{background:rgba(245,158,11,.1)}
+.sinfo{flex:1}
+.sd{font-size:13px;font-weight:600;color:#e9edef}.sdate{font-size:11px;color:rgba(255,255,255,.32);margin-top:2px}
+.samt{font-size:13px;font-weight:700;text-align:right}.samt.cr{color:#00a884}.samt.dr{color:#f59e0b}
+.sbal{font-size:11px;color:rgba(255,255,255,.28);text-align:right;margin-top:2px}
+.sc-foot{padding:5px 16px 7px;display:flex;justify-content:flex-end;gap:4px}
+.sc-foot span{font-size:10px;color:rgba(255,255,255,.28)}
+.sc-back{padding:10px 16px;font-size:13px;font-weight:600;color:#00a884;cursor:pointer;border-top:.5px solid rgba(255,255,255,.07);text-align:center;transition:background .1s}
+.sc-back:hover{background:rgba(0,168,132,.07)}
+
+/* ═══════════════════════════════════════════════
+   USSD PAYMENT POPUP
+═══════════════════════════════════════════════ */
+.ussd-ov{position:absolute;inset:0;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;z-index:50;animation:fov .18s ease}
+@keyframes fov{from{opacity:0}to{opacity:1}}
+.ussd-box{width:380px;background:#1a2433;border-radius:18px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6);animation:sup .22s cubic-bezier(.2,.8,.4,1);border:1px solid rgba(255,255,255,.08)}
+@keyframes sup{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}
+.uh{background:#075E54;padding:15px 18px;color:#fff}
+.uh-row{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:700}
+.uh-row small{font-size:11px;font-weight:400;opacity:.7}
+.ucode{font-size:11px;opacity:.55;margin-top:3px;font-family:monospace}
+.ub{padding:18px}
+.ub p{font-size:14px;color:rgba(255,255,255,.6);margin-bottom:14px;line-height:1.55}
+.ua{background:rgba(0,168,132,.1);border:1px solid rgba(0,168,132,.25);border-radius:10px;padding:13px 16px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+.ua-l{font-size:12px;color:rgba(255,255,255,.42)}.ua-v{font-size:22px;font-weight:700;color:#00a884}
+.ud{font-size:12px;color:rgba(255,255,255,.32);line-height:1.7}
+.uf{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid rgba(255,255,255,.07)}
+.ufbtn{padding:15px;font-size:14px;font-weight:700;cursor:pointer;border:none;background:transparent;text-align:center;transition:background .1s;font-family:'Google Sans',system-ui,sans-serif}
+.ufbtn:hover{background:rgba(255,255,255,.04)}
+.ufbtn.ok{color:#00a884;border-right:1px solid rgba(255,255,255,.07)}.ufbtn.no{color:#ef4444}
+
+/* ═══════════════════════════════════════════════
+   QUICK-REPLY CHIPS
+═══════════════════════════════════════════════ */
+.chips{padding:7px 28px;background:#202c33;border-top:.5px solid rgba(255,255,255,.06);display:none;gap:7px;flex-wrap:wrap;flex-shrink:0}
+.chip{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.11);border-radius:16px;padding:6px 14px;font-size:13px;color:rgba(255,255,255,.65);cursor:pointer;font-weight:500;white-space:nowrap;transition:all .12s}
+.chip:hover{background:rgba(0,168,132,.14);border-color:rgba(0,168,132,.3);color:#00a884}
+
+/* ═══════════════════════════════════════════════
+   INPUT BAR
+═══════════════════════════════════════════════ */
+.inp-bar{padding:9px 28px;background:#202c33;display:flex;align-items:center;gap:10px;flex-shrink:0;border-top:.5px solid rgba(255,255,255,.06)}
+.ie{font-size:22px;cursor:pointer;color:rgba(255,255,255,.4);flex-shrink:0}
+.iw{flex:1;background:rgba(255,255,255,.07);border-radius:24px;display:flex;align-items:center;padding:9px 16px;gap:8px;min-height:44px}
+.iw input{flex:1;border:none;outline:none;font-size:14px;color:#e9edef;font-family:'Google Sans',system-ui,sans-serif;background:transparent}
+.iw input::placeholder{color:rgba(255,255,255,.26)}
+.iico{font-size:17px;color:rgba(255,255,255,.3);cursor:pointer;flex-shrink:0}
+.sbtn{width:44px;height:44px;border-radius:50%;background:#00a884;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sbtn:active{background:#007a62}
+.sbtn svg{width:19px;height:19px;fill:#fff;transform:translateX(1px)}
+
+/* ── pin prompt ── */
+#pp{align-self:center;background:rgba(0,168,132,.09);border:1.5px solid rgba(0,168,132,.28);border-radius:12px;padding:10px 18px;display:flex;align-items:center;gap:9px;font-size:13px;color:rgba(255,255,255,.65);margin:4px 0}
+
+/* ── toast ── */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(8px);background:rgba(11,20,26,.95);color:#e9edef;padding:10px 22px;border-radius:20px;font-size:13px;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;z-index:999;backdrop-filter:blur(12px);border:.5px solid rgba(255,255,255,.09)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#bot{height:1px;flex-shrink:0}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ══════════ SIDEBAR ══════════ -->
+  <div class="sidebar">
+    <div class="sb-head">
+      <div class="sb-logo">R</div>
+      <div>
+        <div class="sb-brand">REVOLVER</div>
+        <div class="sb-tagline">by Nipeboost · Flow Demo</div>
+      </div>
+    </div>
+    <div class="sb-body">
+      <div class="sb-label">Demo Scenarios</div>
+      <div class="sc-row active" id="d-new" onclick="demo('new')">
+        <div class="sc-icon" style="background:rgba(0,168,132,.12)">🆕</div>
+        <div><div class="sc-name">New User Registration</div><div class="sc-hint">KYC → CRB check → Menu</div></div>
+      </div>
+      <div class="sc-row" id="d-ret" onclick="demo('returning')">
+        <div class="sc-icon" style="background:rgba(83,189,235,.1)">👤</div>
+        <div><div class="sc-name">Returning User</div><div class="sc-hint">Login → Menu</div></div>
+      </div>
+      <div class="sb-label" style="margin-top:4px">Available from menu</div>
+      <div class="sc-row dim"><div class="sc-icon" style="background:rgba(0,168,132,.07)">💸</div><div><div class="sc-name">Request a Loan</div><div class="sc-hint">Select option 1</div></div></div>
+      <div class="sc-row dim"><div class="sc-icon" style="background:rgba(245,158,11,.07)">💳</div><div><div class="sc-name">Repay / Prolong</div><div class="sc-hint">Select option 2</div></div></div>
+      <div class="sc-row dim"><div class="sc-icon" style="background:rgba(83,189,235,.07)">📊</div><div><div class="sc-name">Balance & Statement</div><div class="sc-hint">Options 3–5</div></div></div>
+      <div class="sc-row dim"><div class="sc-icon" style="background:rgba(139,92,246,.07)">🔑</div><div><div class="sc-name">Change PIN</div><div class="sc-hint">Select option 6</div></div></div>
+    </div>
+    <div class="flow-panel">
+      <div class="flow-title">Current flow</div>
+      <div id="fp-steps"></div>
+    </div>
+  </div>
+
+  <!-- ══════════ CHAT PANEL ══════════ -->
+  <div class="chat-panel">
+    <div class="wa-hdr">
+      <div class="av">R<div class="av-dot"></div></div>
+      <div><div class="wa-name">REVOLVER</div><div class="wa-sub" id="wa-sub">Nipeboost Financial Services</div></div>
+      <div class="hdr-actions"><span>📞</span><span>⋮</span></div>
+    </div>
+    <div class="chat" id="chat">
+      <div class="chat-inner" id="ci"><div id="bot"></div></div>
+    </div>
+    <div class="chips" id="chips">
+      <span class="chip" onclick="chip('menu')">☰ Menu</span>
+      <span class="chip" onclick="chip('balance')">💳 Balance</span>
+      <span class="chip" onclick="chip('due')">📅 Due date</span>
+      <span class="chip" onclick="chip('stmt')">📋 Statement</span>
+    </div>
+    <div class="inp-bar">
+      <span class="ie">😊</span>
+      <div class="iw">
+        <input id="inp" type="text" placeholder="Message" autocomplete="off"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();send()}">
+        <span class="iico">📎</span>
+      </div>
+      <button class="sbtn" onclick="send()">
+        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      </button>
+    </div>
+  </div>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+
+/* ─────────────────────────────────────
+   DATA
+───────────────────────────────────── */
+const DUMMY={fullName:'Amina Hassan Mwangi',dob:'14/03/1992',nida:'19920314-12345-00001-8',employer:'Vodacom Tanzania PLC',netPay:1200000,phone:'+255 712 345 678'};
+function buildAcct(kyc){const lim=Math.round((kyc||DUMMY).netPay*0.20);return{name:(kyc||DUMMY).fullName.split(' ')[0],limit:lim,outstanding:0,due:'27 Jun 2026',ref:'NPB-8847',rate:6.25};}
+
+/* ─────────────────────────────────────
+   STATE
+───────────────────────────────────── */
+const S={flow:'start',mode:'new',acct:buildAcct(),kyc:{...DUMMY},loanAmt:0,newPin:'',menuShown:false,pendingSummary:null};
+
+/* ─────────────────────────────────────
+   FLOW PROGRESS
+───────────────────────────────────── */
+const FLOW_STEPS={
+  new:[{key:'welcome',label:'Welcome'},{key:'kyc',label:'KYC details'},{key:'crb',label:'CRB check'},{key:'menu',label:'Main menu'},{key:'action',label:'Service'}],
+  returning:[{key:'welcome',label:'Welcome'},{key:'login',label:'Login'},{key:'menu',label:'Main menu'},{key:'action',label:'Service'}],
+};
+const FLOW_MAP={start:'welcome',kyc_intro:'welcome',kyc_confirm:'kyc',kyc_processing:'crb',main:'menu',loan_amt:'action',loan_confirm:'action',loan_pin:'action',repay:'action',partial_amt:'action',pin_old:'action',pin_new:'action',pin_confirm:'action',ret_intro:'welcome',idle:'menu',lang:'action'};
+
+function updateProgress(){
+  const steps=FLOW_STEPS[S.mode]||FLOW_STEPS.new;
+  const cur=FLOW_MAP[S.flow]||'welcome';
+  const curIdx=steps.findIndex(s=>s.key===cur);
+  document.getElementById('fp-steps').innerHTML=steps.map((s,i)=>{
+    const cls=i<curIdx?'done':i===curIdx?'active':'';
+    return`<div class="fp-step ${cls}"><div class="fp-dot"></div>${i<curIdx?'✓ ':''}${s.label}</div>`;
+  }).join('');
+}
+function setFlow(f){S.flow=f;updateProgress();}
+
+/* ─────────────────────────────────────
+   DOM HELPERS
+───────────────────────────────────── */
+const chat=document.getElementById('chat');
+const ci=document.getElementById('ci');  // chat-inner
+const inp=document.getElementById('inp');
+
+function scrollNow(){
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{chat.scrollTop=chat.scrollHeight+9999;}));
+  setTimeout(()=>{chat.scrollTop=chat.scrollHeight+9999;},120);
+}
+function ins(el){
+  el.classList.add('fade-in');
+  ci.insertBefore(el,document.getElementById('bot'));
+  scrollNow();
+}
+function ts(){return new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});}
+function fmt(n){return new Intl.NumberFormat('en-TZ').format(Math.round(n));}
+
+function addChip(){const d=document.createElement('div');d.className='date-chip';d.textContent='Today';ins(d);}
+function addSys(t){const d=document.createElement('div');d.className='sys-msg';d.innerHTML=t;ins(d);}
+function bub(html,dir){
+  const r=document.createElement('div');r.className=`row ${dir}`;
+  const b=document.createElement('div');b.className=`bub ${dir}`;
+  b.innerHTML=`<span class="bt">${html}</span><div class="bf"><span>${ts()}</span>${dir==='out'?'<span class="tick">✓✓</span>':''}</div>`;
+  r.appendChild(b);ins(r);
+}
+function typing(ms=800){
+  const r=document.createElement('div');r.className='typing-row';r.id='tind';
+  r.innerHTML=`<div class="typing-bub"><div class="td"></div><div class="td"></div><div class="td"></div></div>`;
+  ins(r);
+  return new Promise(res=>setTimeout(()=>{const t=document.getElementById('tind');if(t)t.remove();setTimeout(()=>{chat.scrollTop=chat.scrollHeight+9999;},20);res();},ms));
+}
+async function say(html,ms=800){await typing(ms);bub(html,'in');}
+
+/* ─────────────────────────────────────
+   STAGE COLLAPSE
+   Fades out all current messages, then
+   inserts a compact summary pill and
+   resolves when the animation is done.
+───────────────────────────────────── */
+function collapseStage(summaryHtml){
+  return new Promise(resolve=>{
+    const bot=document.getElementById('bot');
+    const nodes=[];
+    let n=ci.firstChild;
+    while(n&&n!==bot){nodes.push(n);n=n.nextSibling;}
+    if(!nodes.length){resolve();return;}
+
+    nodes.forEach(n=>n.classList.add('collapsing'));
+
+    setTimeout(()=>{
+      nodes.forEach(n=>n.remove());
+      if(summaryHtml){
+        const pill=document.createElement('div');
+        pill.className='stage-pill';
+        pill.innerHTML=summaryHtml;
+        ci.insertBefore(pill,bot);
+      }
+      resolve();
+    },340);
+  });
+}
+
+/* ─────────────────────────────────────
+   MENU — collapses previous stage first
+   on every call after the first one
+───────────────────────────────────── */
+function mainMenu(){
+  const show=()=>{
+    menu('REVOLVER — How can we help?',[
+      'Request a loan  ·  Omba mkopo',
+      'Repay or prolong  ·  Lipa au sogeza',
+      'Check balance  ·  Angalia salio',
+      'Check due date  ·  Muda wa malipo',
+      'Mini statement  ·  Taarifa fupi',
+      'Change PIN  ·  Badili namba ya siri',
+      'Change language  ·  Badili lugha',
+      'Service terms  ·  Vigezo na masharti',
+    ],onMain);
+  };
+
+  if(!S.menuShown){S.menuShown=true;show();return;}
+
+  const summary=S.pendingSummary||null;
+  S.pendingSummary=null;
+  collapseStage(summary).then(show);
+}
+
+/* ─────────────────────────────────────
+   MENU CARD
+───────────────────────────────────── */
+function menu(heading,items,handler){
+  const c=document.createElement('div');c.className='mc';
+  c.innerHTML=`<div class="mc-head">${heading}</div>`+
+    items.map((t,i)=>`<div class="mc-item" data-i="${i}"><div class="mn">${i+1}</div><span>${t}</span></div>`).join('')+
+    `<div class="mc-foot"><span>${ts()}</span><span class="tick">✓✓</span></div>`;
+  c.querySelectorAll('.mc-item').forEach(el=>{
+    el.addEventListener('click',()=>{bub(el.querySelector('span').textContent.trim(),'out');handler(parseInt(el.dataset.i)+1);});
+  });
+  ins(c);
+}
+
+/* ─────────────────────────────────────
+   KYC
+───────────────────────────────────── */
+async function startKyc(){
+  setFlow('kyc_intro');
+  await say(`Habari! 👋 Welcome to <b>REVOLVER</b> by Nipeboost.<br><br>Tanzania's fastest revolving credit — salary-backed, mobile-first.<br><br>Please review and confirm your registration details below:`,650);
+  showKycForm();
+}
+function showKycForm(){
+  setFlow('kyc_confirm');
+  const k=S.kyc;const lim=Math.round(k.netPay*0.20);
+  const card=document.createElement('div');card.className='kyc-card';
+  card.innerHTML=`
+    <div class="kyc-head"><h4>📋 Registration details</h4><p>Pre-filled · Tap any field to edit</p></div>
+    ${[{label:'Full name',key:'fullName',type:'text',val:k.fullName},{label:'Date of birth',key:'dob',type:'text',val:k.dob},{label:'NIDA number',key:'nida',type:'text',val:k.nida},{label:'Employer',key:'employer',type:'text',val:k.employer},{label:'Net salary',key:'netPay',type:'number',val:k.netPay},{label:'Mobile number',key:'phone',type:'tel',val:k.phone}]
+    .map(f=>`<div class="kyc-row editable" data-key="${f.key}"><span class="k">${f.label}</span><div class="kv-wrap"><span class="v view-mode">${f.key==='netPay'?'TZS '+fmt(f.val):f.val}</span><input class="kv-input" data-key="${f.key}" type="${f.type}" value="${f.val}" style="display:none"></div></div>`).join('')}
+    <div class="kyc-row" style="background:rgba(0,168,132,.06)"><span class="k">Estimated credit limit</span><span class="v green" id="est-lim">TZS ${fmt(lim)}</span></div>
+    <div style="padding:9px 16px;font-size:11px;color:rgba(255,255,255,.28);border-top:.5px solid rgba(255,255,255,.07)">✅ CRB check via Dun &amp; Bradstreet · Governed by Bank of Tanzania</div>
+    <div class="kyc-acts"><button class="kyc-btn ok" id="kc-ok">✓ Confirm &amp; Register</button><button class="kyc-btn no" id="kc-no">✗ Cancel</button></div>`;
+
+  card.querySelectorAll('.kyc-row.editable').forEach(row=>{
+    row.addEventListener('click',()=>{
+      const vEl=row.querySelector('.view-mode');const iEl=row.querySelector('.kv-input');
+      if(iEl.style.display==='none'){vEl.style.display='none';iEl.style.display='block';iEl.focus();iEl.select();}
+      iEl.addEventListener('blur',()=>{
+        const key=iEl.dataset.key;let val=iEl.value.trim()||String(S.kyc[key]);
+        if(key==='netPay'){const n=parseInt(val.replace(/[^0-9]/g,''));S.kyc[key]=n||S.kyc[key];val='TZS '+fmt(S.kyc[key]);const el=document.getElementById('est-lim');if(el)el.textContent='TZS '+fmt(Math.round(S.kyc.netPay*0.20));}
+        else{S.kyc[key]=val;}
+        vEl.textContent=key==='netPay'?'TZS '+fmt(S.kyc[key]):val;vEl.style.display='';iEl.style.display='none';
+      },{once:true});
+    });
+  });
+  card.querySelector('#kc-ok').addEventListener('click',()=>submitKyc(card));
+  card.querySelector('#kc-no').addEventListener('click',()=>{bub('✗ Cancel','out');say('No problem. Type <b>hi</b> anytime to restart.',400);setFlow('idle');});
+  ins(card);
+  setTimeout(()=>{chat.scrollTop=chat.scrollHeight+9999;},400);
+}
+async function submitKyc(card){
+  card.querySelectorAll('.kyc-btn,.editable').forEach(b=>{b.style.pointerEvents='none';});
+  card.querySelector('#kc-ok').style.opacity='.5';
+  bub('✓ Confirm & Register','out');
+  setFlow('kyc_processing');
+  document.getElementById('wa-sub').textContent='Verifying…';
+  await typing(1800);
+  document.getElementById('wa-sub').textContent='Online';
+  S.acct=buildAcct(S.kyc);
+  await say(`🎉 <b>Registration approved!</b><br><br>Welcome, <b>${S.acct.name}</b>!<br>✅ CRB check: <b style="color:#00a884">Passed</b><br>💳 Credit facility: <b style="color:#00a884">TZS ${fmt(S.acct.limit)}</b><br>📱 Disbursement wallet: <b>${S.kyc.phone}</b>`,700);
+  showChips();
+  setFlow('main');
+  // Collapse registration into a summary pill, then show menu
+  S.pendingSummary=`<span class="sp-icon">✅</span>${S.acct.name} registered · Limit TZS ${fmt(S.acct.limit)}`;
+  setTimeout(mainMenu,600);
+}
+
+/* ─────────────────────────────────────
+   RETURNING USER
+───────────────────────────────────── */
+async function startReturning(){
+  setFlow('ret_intro');S.acct=buildAcct(DUMMY);
+  await say(`Habari! 👋 Welcome back to <b>REVOLVER</b> by Nipeboost.`,500);
+  menu('How can we help?',['Login to my account','Register as a new user'],async n=>{
+    if(n===2){await switchToNew();return;}
+    document.getElementById('wa-sub').textContent='Verifying…';
+    await typing(1100);
+    document.getElementById('wa-sub').textContent='Online';
+    bub(`✅ Welcome back, <b>${S.acct.name}</b>!<br><br>Account: <b style="color:#00a884">Good standing</b><br>Available: <b>TZS ${fmt(S.acct.limit)}</b>`,'in');
+    showChips();setFlow('main');
+    S.pendingSummary=`<span class="sp-icon">👤</span>Logged in as ${S.acct.name} · TZS ${fmt(S.acct.limit)} available`;
+    setTimeout(mainMenu,400);
+  });
+}
+async function switchToReturning(){S.mode='returning';document.getElementById('d-new').classList.remove('active');document.getElementById('d-ret').classList.add('active');await startReturning();}
+async function switchToNew(){S.mode='new';document.getElementById('d-ret').classList.remove('active');document.getElementById('d-new').classList.add('active');await startKyc();}
+
+/* ─────────────────────────────────────
+   MAIN MENU HANDLER
+───────────────────────────────────── */
+async function onMain(n){
+  setFlow('main');
+  switch(n){
+    case 1:
+      setFlow('loan_amt');
+      await say(`Available facility: <b>TZS ${fmt(S.acct.limit)}</b><br><br>Enter the amount to borrow:<br><small>Min TZS 5,000 · Max TZS ${fmt(S.acct.limit)} · Type <b>0</b> to cancel</small>`,700);
+      break;
+    case 2:
+      setFlow('repay');await typing(450);
+      menu('Repay or prolong — choose an option',['Pay full balance  ·  Lipa deni lote','Pay partial amount  ·  Lipa kiasi','Prolong loan (+30 days)  ·  Sogeza muda'],async r=>{
+        setFlow('main');
+        if(r===1){await typing(400);ussdPopup('full');}
+        else if(r===2){setFlow('partial_amt');await say(`Outstanding: <b>TZS ${fmt(S.acct.outstanding||350000)}</b><br><br>Enter the amount you want to pay:<br><small>Min TZS 1,000 · Type <b>0</b> to cancel</small>`,650);}
+        else{await typing(400);ussdPopup('prolong');}
+      });
+      break;
+    case 3:await doBalance();break;
+    case 4:await doDue();break;
+    case 5:await doStmt();break;
+    case 6:setFlow('pin_old');await say('Enter your <b>current PIN</b>:',600);pinPrompt('Enter current PIN');break;
+    case 7:
+      setFlow('lang');await typing(400);
+      menu('Select language / Chagua lugha',['English','Kiswahili'],async l=>{
+        setFlow('main');await say(l===1?'✅ Language set to <b>English</b>.':'✅ Lugha imewekwa <b>Kiswahili</b>. Asante!',500);
+        S.pendingSummary=`<span class="sp-icon">🌐</span>Language updated`;setTimeout(mainMenu,400);
+      });
+      break;
+    case 8:await say('📋 Full terms:<br>🌐 <a href="#">www.kopabayport.co.tz</a>',600);setTimeout(mainMenu,500);break;
+  }
+}
+
+/* ─────────────────────────────────────
+   LOAN FLOW
+───────────────────────────────────── */
+function loanCard(amt){
+  const rep=Math.round(amt*(1+S.acct.rate/100));const pro=Math.round(amt*0.10);
+  const c=document.createElement('div');c.className='lc';
+  c.innerHTML=`<div class="lc-head"><h4>Loan request summary</h4><p>Review before confirming</p></div>
+    <div class="lc-body">
+      <div class="lr"><span class="lk">Loan amount</span><span class="lv g">TZS ${fmt(amt)}</span></div>
+      <div class="lr"><span class="lk">Interest (${S.acct.rate}%)</span><span class="lv">TZS ${fmt(rep-amt)}</span></div>
+      <div class="lr"><span class="lk">Total repayment</span><span class="lv">TZS ${fmt(rep)}</span></div>
+      <div class="lr"><span class="lk">Due date</span><span class="lv a">${S.acct.due}</span></div>
+      <div class="lr"><span class="lk">Prolongation fee</span><span class="lv">TZS ${fmt(pro)}</span></div>
+      <div class="lr"><span class="lk">Reference</span><span class="lv">${S.acct.ref}</span></div>
+    </div>
+    <div class="lc-acts"><button class="lc-btn ok" id="lc-ok">✓ Confirm</button><button class="lc-btn no" id="lc-no">✗ Cancel</button></div>`;
+  c.querySelector('#lc-ok').addEventListener('click',()=>confirmLoan(true,c));
+  c.querySelector('#lc-no').addEventListener('click',()=>confirmLoan(false,c));
+  ins(c);
+}
+async function confirmLoan(yes,c){
+  c.querySelectorAll('.lc-btn').forEach(b=>{b.style.pointerEvents='none';b.style.opacity='.5';});
+  if(!yes){bub('✗ Cancel','out');setFlow('main');S.pendingSummary=`<span class="sp-icon">❌</span>Loan cancelled`;await say('Cancelled. Returning to menu.',500);setTimeout(mainMenu,400);return;}
+  bub('✓ Confirm','out');setFlow('loan_pin');await say('Enter your <b>PIN</b> to authorise:',600);pinPrompt('Authorise with PIN');
+}
+async function handleLoanPin(val){
+  clearPin();bub('••••','out');
+  if(!/^\d{4}$/.test(val)){await say('❌ Invalid PIN. Cancelled.',500);setFlow('main');S.pendingSummary=null;setTimeout(mainMenu,400);return;}
+  document.getElementById('wa-sub').textContent='Processing…';
+  await typing(1600);
+  document.getElementById('wa-sub').textContent='Online';
+  const rep=Math.round(S.loanAmt*(1+S.acct.rate/100));
+  bub(`🎉 <b>Loan approved!</b><br><br><b>TZS ${fmt(S.loanAmt)}</b> sent to your wallet.<br>📖 Ref: <b>${S.acct.ref}</b><br>💵 Repay: <b>TZS ${fmt(rep)}</b><br>📅 By: <b>${S.acct.due}</b><br><br>Asante! 🙏`,'in');
+  toast(`✓ TZS ${fmt(S.loanAmt)} disbursed`);
+  S.pendingSummary=`<span class="sp-icon">💸</span>Loan TZS ${fmt(S.loanAmt)} disbursed · Due ${S.acct.due}`;
+  setFlow('main');setTimeout(mainMenu,800);
+}
+
+/* ─────────────────────────────────────
+   USSD POPUP
+───────────────────────────────────── */
+function ussdPopup(type,partialAmt){
+  const due=S.acct.outstanding||350000;const fee=Math.round(due*0.10);
+  const amount=type==='partial'?partialAmt:type==='prolong'?fee:due;
+  const bal=type==='partial'?Math.max(0,due-amount):0;
+  const mnos=['Mpesa','TigoPesa','AirtelMoney'];const mno=mnos[Math.floor(Math.random()*3)];
+  const bg={Mpesa:'#00a884',TigoPesa:'#e53935',AirtelMoney:'#e65100'};
+  const lbl=type==='prolong'?'Prolongation fee':type==='partial'?'Partial payment':'Full balance';
+  const balRow=type==='partial'?`<div style="display:flex;justify-content:space-between;font-size:12px;padding:6px 0;border-top:1px solid rgba(255,255,255,.07);margin-top:6px"><span style="color:rgba(255,255,255,.4)">Remaining</span><span style="font-weight:700;color:${bal===0?'#00a884':'#f59e0b'}">TZS ${fmt(bal)}</span></div>`:'';
+  const ov=document.createElement('div');ov.className='ussd-ov';ov.id='ussd-ov';
+  ov.innerHTML=`<div class="ussd-box">
+    <div class="uh"><div class="uh-row"><span style="background:${bg[mno]};width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;color:#fff;font-weight:800;flex-shrink:0">${mno[0]}</span>${mno}<small>Payment Request</small></div><div class="ucode">*150*49# · REVOLVER by Nipeboost</div></div>
+    <div class="ub"><p>${lbl}</p><div class="ua"><span class="ua-l">Amount to pay</span><span class="ua-v">TZS ${fmt(amount)}</span></div>${balRow}<div class="ud">Paybill: <b>400200</b> Mpesa · <b>510900</b> Tigo · <b>788800</b> Airtel<br>Account no: <b>${S.acct.ref}</b></div></div>
+    <div class="uf"><button class="ufbtn ok" id="u-ok">✓ Confirm</button><button class="ufbtn no" id="u-no">✗ Cancel</button></div>
+  </div>`;
+  document.querySelector('.chat-panel').appendChild(ov);
+  ov.querySelector('#u-ok').addEventListener('click',()=>confirmUssd(true,amount,type,mno,ov,bal));
+  ov.querySelector('#u-no').addEventListener('click',()=>confirmUssd(false,amount,type,mno,ov,bal));
+}
+async function confirmUssd(yes,amount,type,mno,ov,bal){
+  ov.remove();
+  if(!yes){await say('Payment cancelled. Returning to menu.',400);setFlow('main');S.pendingSummary=`<span class="sp-icon">❌</span>Payment cancelled`;setTimeout(mainMenu,350);return;}
+  document.getElementById('wa-sub').textContent='Processing…';
+  await typing(1500);
+  document.getElementById('wa-sub').textContent='Online';
+  if(type==='prolong'){
+    bub(`✅ <b>Prolongation confirmed!</b><br>Fee: <b>TZS ${fmt(amount)}</b> via ${mno}<br>Extended <b>30 days</b> · New due: <b>27 Jul 2026</b><br>Asante! 🙏`,'in');
+    S.pendingSummary=`<span class="sp-icon">🔄</span>Prolonged 30 days · New due 27 Jul 2026`;
+  } else {
+    bub(`✅ <b>Payment received!</b><br>Paid: <b>TZS ${fmt(amount)}</b> via ${mno}<br>Balance: <b style="color:${bal===0?'#00a884':'#f59e0b'}">TZS ${fmt(bal)}</b><br>📖 Ref: <b>${S.acct.ref}</b>${bal>0?`<br><small>Clear balance by ${S.acct.due}</small>`:'<br>Asante kwa kulipa! 🙏'}`,'in');
+    S.pendingSummary=`<span class="sp-icon">✅</span>Paid TZS ${fmt(amount)} · Balance TZS ${fmt(bal)}`;
+  }
+  toast(`✓ TZS ${fmt(amount)} confirmed`);
+  setFlow('main');setTimeout(mainMenu,700);
+}
+
+/* ─────────────────────────────────────
+   BALANCE / DUE / STATEMENT
+───────────────────────────────────── */
+async function doBalance(){await say(`📊 <b>Balance</b><br><br>💰 Outstanding: <b>TZS ${fmt(S.acct.outstanding)}</b><br>📈 Interest accrued: <b>TZS ${fmt(Math.round(S.acct.outstanding*0.03))}</b><br>💳 Available: <b style="color:#00a884">TZS ${fmt(S.acct.limit-S.acct.outstanding)}</b><br><br><small>Tap <b>☰ Menu</b> above or type <b>0</b> to go back.</small>`,700);setFlow('main');}
+async function doDue(){await say(`📅 <b>Next payment</b><br><br>💵 Total due: <b>TZS ${fmt(350000*1.0625)}</b><br>⏰ Due: <b>${S.acct.due}</b><br>📖 Ref: <b>${S.acct.ref}</b><br><br>Pay via Mpesa <b>400200</b> · Tigo <b>510900</b> · Airtel <b>788800</b>.<br><br><small>Tap <b>☰ Menu</b> above or type <b>0</b> to go back.</small>`,700);setFlow('main');}
+async function doStmt(){
+  const txns=[{t:'cr',ic:'💰',d:'Loan disbursed',dt:'14 Apr 2026',a:+350000,b:350000},{t:'dr',ic:'💸',d:'Repayment',dt:'10 Apr 2026',a:-200000,b:0},{t:'cr',ic:'💰',d:'Loan disbursed',dt:'08 Mar 2026',a:+200000,b:200000},{t:'dr',ic:'🔄',d:'Prolongation fee',dt:'25 Feb 2026',a:-24000,b:0},{t:'dr',ic:'💸',d:'Full repayment',dt:'10 Feb 2026',a:-240000,b:0}];
+  await typing(450);
+  const c=document.createElement('div');c.className='sc';
+  c.innerHTML=`<div class="sc-head">Mini Statement <small>Last 5 transactions</small></div>`+
+    txns.map(x=>`<div class="sc-row"><div class="si ${x.t}">${x.ic}</div><div class="sinfo"><div class="sd">${x.d}</div><div class="sdate">${x.dt}</div></div><div><div class="samt ${x.t}">${x.a>0?'+':''}TZS ${fmt(Math.abs(x.a))}</div><div class="sbal">Bal: TZS ${fmt(x.b)}</div></div></div>`).join('')+
+    `<div class="sc-foot"><span>${ts()}</span><span class="tick">✓✓</span></div>
+     <div class="sc-back" onclick="goBackToMenu()">← Back to menu</div>`;
+  ins(c);setFlow('main');
+}
+
+/* ─────────────────────────────────────
+   PIN
+───────────────────────────────────── */
+function pinPrompt(lbl){
+  const d=document.createElement('div');d.id='pp';d.innerHTML=`<span>🔐</span><span>${lbl}</span>`;
+  ins(d);inp.type='password';inp.placeholder='Enter 4-digit PIN and press send';inp.value='';inp.focus();
+}
+function clearPin(){const p=document.getElementById('pp');if(p)p.remove();inp.type='text';inp.placeholder='Message';}
+async function handleChangePin(val,stage){
+  clearPin();bub('••••','out');
+  if(stage==='old'){if(!/^\d{4}$/.test(val)){await say('❌ Incorrect PIN. Returning to menu.',500);setFlow('main');setTimeout(mainMenu,400);return;}setFlow('pin_new');await say('Enter your <b>new 4-digit PIN</b>:',600);pinPrompt('Enter new PIN');return;}
+  if(stage==='new'){if(!/^\d{4}$/.test(val)){await say('❌ Must be 4 digits. Try again.',500);pinPrompt('Enter new PIN');return;}S.newPin=val;setFlow('pin_confirm');await say('Re-enter to confirm:',500);pinPrompt('Confirm new PIN');return;}
+  if(val!==S.newPin){await say('❌ PINs don\'t match. Returning to menu.',600);setFlow('main');S.newPin='';setTimeout(mainMenu,400);return;}
+  await say('✅ <b>PIN changed successfully!</b>',600);
+  S.pendingSummary=`<span class="sp-icon">🔑</span>PIN changed successfully`;
+  setFlow('main');setTimeout(mainMenu,400);
+}
+
+/* ─────────────────────────────────────
+   CHIPS & INPUT
+───────────────────────────────────── */
+function showChips(){document.getElementById('chips').style.display='flex';}
+function goBackToMenu(){S.pendingSummary=null;setFlow('main');mainMenu();}
+async function chip(type){
+  if(type==='menu'){goBackToMenu();return;}
+  if(!['main','repay','lang'].includes(S.flow))return;
+  bub(type==='balance'?'Balance':type==='due'?'Due date':'Statement','out');
+  setFlow('main');
+  if(type==='balance'){await doBalance();}
+  else if(type==='due'){await doDue();}
+  else{await doStmt();}
+}
+
+async function send(){
+  const raw=inp.value.trim();inp.value='';
+  if(!raw&&!['loan_pin','pin_old','pin_new','pin_confirm'].includes(S.flow))return;
+  if(S.flow==='loan_pin'){await handleLoanPin(raw);return;}
+  if(S.flow==='pin_old'){await handleChangePin(raw,'old');return;}
+  if(S.flow==='pin_new'){await handleChangePin(raw,'new');return;}
+  if(S.flow==='pin_confirm'){await handleChangePin(raw,'confirm');return;}
+  if(!raw)return;
+  if(/^(hi|hello|habari)$/i.test(raw)){await reset();return;}
+  if(/^(0|menu|back|home)$/i.test(raw)){bub(raw,'out');goBackToMenu();return;}
+  if(S.flow==='loan_amt'){
+    bub(raw,'out');
+    const amt=parseInt(raw.replace(/[^0-9]/g,''));
+    if(!amt||amt<5000){await say(`❌ Minimum TZS 5,000. Try again or type <b>0</b> to cancel.`,600);return;}
+    if(amt>S.acct.limit){await say(`❌ Exceeds your facility of <b>TZS ${fmt(S.acct.limit)}</b>.`,600);return;}
+    S.loanAmt=amt;setFlow('loan_confirm');await typing(800);loanCard(amt);return;
+  }
+  if(S.flow==='partial_amt'){
+    bub(raw,'out');
+    const due=S.acct.outstanding||350000;const amt=parseInt(raw.replace(/[^0-9]/g,''));
+    if(!amt||amt<1000){await say(`❌ Minimum TZS 1,000. Try again or type <b>0</b> to cancel.`,500);return;}
+    if(amt>due){await say(`❌ Exceeds outstanding balance of <b>TZS ${fmt(due)}</b>.`,500);return;}
+    setFlow('main');await typing(400);ussdPopup('partial',amt);return;
+  }
+  bub(raw,'out');
+  await say('Please tap a menu option above, or type <b>menu</b> to restart.',600);
+  if(S.flow==='main')setTimeout(mainMenu,300);
+}
+
+/* ─────────────────────────────────────
+   RESET
+───────────────────────────────────── */
+async function reset(){
+  while(ci.firstChild&&ci.firstChild.id!=='bot')ci.removeChild(ci.firstChild);
+  const ov=document.getElementById('ussd-ov');if(ov)ov.remove();
+  inp.type='text';inp.placeholder='Message';inp.value='';
+  S.flow='start';S.kyc={...DUMMY};S.loanAmt=0;S.newPin='';S.menuShown=false;S.pendingSummary=null;
+  document.getElementById('chips').style.display='none';
+  document.getElementById('wa-sub').textContent='Nipeboost Financial Services';
+  addChip();addSys('🔒 Messages are end-to-end encrypted');
+  updateProgress();
+  if(S.mode==='new')await startKyc();else await startReturning();
+}
+
+async function demo(mode){
+  S.mode=mode;
+  document.getElementById('d-new').classList.toggle('active',mode==='new');
+  document.getElementById('d-ret').classList.toggle('active',mode==='returning');
+  await reset();
+}
+
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+
+demo('new');
+</script>
+</body>
+</html>

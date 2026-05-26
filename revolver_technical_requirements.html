@@ -900,7 +900,7 @@
       </div>
       <div class="arch-node accent-blue">
         <div class="arch-node-label">Core System</div>
-        <div class="arch-node-name">Nipeboost Back Office</div>
+        <div class="arch-node-name">Revolver Back Office</div>
         <p>Central web portal with role-based modules: Agent (registration), QC (approval), Customer Care, Finance, Administrator, and Authorizer.</p>
         <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
           <span class="tag tag-blue">Web Portal</span>
@@ -922,13 +922,13 @@
       <p style="font-family: var(--font-mono); font-size: 10px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 12px;">System Data Flow</p>
       <div class="code-block">
 <span class="c">// Loan Disbursement Flow</span>
-<span class="k">Client</span> → [WhatsApp / USSD] → <span class="n">Loan Request API</span> → <span class="n">Nipeboost Core</span>
+<span class="k">Client</span> → [WhatsApp / USSD] → <span class="n">Loan Request API</span> → <span class="n">Revolver Core</span>
   → <span class="k">CRB Check</span> (eligibility) → <span class="n">Loan Created</span>
   → <span class="k">B2C API</span> (Mpesa/Tigo/Airtel) → <span class="n">Client Mobile Wallet</span>
   → <span class="k">SMS Confirmation</span> → Client
 
 <span class="c">// Repayment Flow</span>
-<span class="k">Client</span> → [MNO PayBill] → <span class="n">C2B Wallet</span> → <span class="n">Nipeboost Core</span>
+<span class="k">Client</span> → [MNO PayBill] → <span class="n">C2B Wallet</span> → <span class="n">Revolver Core</span>
   → <span class="k">Account Update</span> → <span class="k">SMS Confirmation</span> → Client
       </div>
     </div>
@@ -971,7 +971,7 @@
             <div class="wa-avatar">R</div>
             <div>
               <div class="wa-name">REVOLVER</div>
-              <div class="wa-status">Powered by Nipeboost</div>
+              <div class="wa-status">Powered by Revolver</div>
             </div>
           </div>
           <div class="wa-chat">
@@ -1084,7 +1084,7 @@
             <div style="width:8px;height:8px;background:var(--accent);border-radius:50%;"></div>
             <span>*150*49# — REVOLVER</span>
           </div>
-          <div class="phone-screen">REVOLVER / NIPEBOOST
+          <div class="phone-screen">REVOLVER
 ─────────────────────
 1. Request a Loan
    Omba Mkopo
@@ -1187,7 +1187,7 @@ Enter option:</div>
           <td>SC-03</td>
           <td>✅ Success — amount within limit</td>
           <td style="color: var(--text);">You have requested a loan of TZSxx with repayment of TZSxx or prolongation fee of TZSxx to be paid on dd/mm/yy</td>
-          <td style="color: var(--accent); font-family: var(--font-mono); font-size: 11px;">Umefanikiwa kupokea mkopo wa TZS 200,000, utarejesha TZS xxxx au utaweza kusogeza muda kwa kulipa ada ya TZS xxxx kabla ya tarehe dd/mm/yy. Asante kwa kutumia NIPEBOOST</td>
+          <td style="color: var(--accent); font-family: var(--font-mono); font-size: 11px;">Umefanikiwa kupokea mkopo wa TZS 200,000, utarejesha TZS xxxx au utaweza kusogeza muda kwa kulipa ada ya TZS xxxx kabla ya tarehe dd/mm/yy. Asante kwa kutumia Revolver</td>
         </tr>
         <tr>
           <td>SC-04</td>
@@ -1392,11 +1392,11 @@ Enter option:</div>
           <div class="flow-label">Registration SMS (on Approval)</div>
           <div class="flow-msg">Two-part SMS to client mobile number:</div>
           <div style="background: var(--surface); padding: 14px; margin-top: 8px; border-left: 2px solid var(--accent2);">
-            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;"><strong style="color: var(--text);">EN Part 1:</strong> Your Nipeboost registration is complete. You can dial *150*49# and request loan for up to TZSxxxxx. Press 1 to accept T&Cs.</p>
-            <p style="font-size: 12px; color: var(--text-muted);"><strong style="color: var(--text);">EN Part 2:</strong> Your Nipeboost ID is xxxx and your default PIN xxxx. Please change it on your first login.</p>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;"><strong style="color: var(--text);">EN Part 1:</strong> Your Revolver registration is complete. You can dial *150*49# and request loan for up to TZSxxxxx. Press 1 to accept T&Cs.</p>
+            <p style="font-size: 12px; color: var(--text-muted);"><strong style="color: var(--text);">EN Part 2:</strong> Your Revolver ID is xxxx and your default PIN xxxx. Please change it on your first login.</p>
           </div>
           <div style="background: var(--surface); padding: 14px; margin-top: 8px; border-left: 2px solid var(--accent);">
-            <p style="font-size: 11px; color: var(--accent); font-family: var(--font-mono);">SW: Usajili wako wa NIPEBOOST umekamilika. Piga *150*49# kuomba mkopo wa hadi Sh xxx. Namba ya siri ni xxxx, badilisha namba ya siri ukishaitumia mara ya kwanza. Wakati wa kulipa deni utatumia namba ya kumbukumbu xxxx. Kusoma vigezo na masharti bofya https://bit.ly/3P7JA84</p>
+            <p style="font-size: 11px; color: var(--accent); font-family: var(--font-mono);">SW: Usajili wako wa REVOLVER umekamilika. Piga *150*49# kuomba mkopo wa hadi Sh xxx. Namba ya siri ni xxxx, badilisha namba ya siri ukishaitumia mara ya kwanza. Wakati wa kulipa deni utatumia namba ya kumbukumbu xxxx. Kusoma vigezo na masharti bofya https://bit.ly/3P7JA84</p>
           </div>
         </div>
       </div>
@@ -1529,7 +1529,7 @@ to confirm.
 <span class="n">END</span> You have received a loan of
 TZS 200,000. Repayment: TZS
 220,000. Due: 27/05/2026.
-Asante kwa kutumia NIPEBOOST.</div>
+Asante kwa kutumia REVOLVER.</div>
         </div>
       </div>
     </div>
@@ -1638,21 +1638,21 @@ Asante kwa kutumia NIPEBOOST.</div>
           <td><span class="tag tag-orange">PDD1 – Day 1</span></td>
           <td>1 day past due</td>
           <td>Automated SMS</td>
-          <td style="color: var(--accent); font-family: var(--font-mono); font-size: 11px;">Deni lako la NipeBoost limepitiliza siku 1. Lipa Shxxxxx...</td>
+          <td style="color: var(--accent); font-family: var(--font-mono); font-size: 11px;">Deni lako la Revolver limepitiliza siku 1. Lipa Shxxxxx...</td>
           <td><span class="tag tag-orange">Arrears msg</span></td>
         </tr>
         <tr>
           <td><span class="tag tag-orange">PDD1 – Every 15 days</span></td>
           <td>Days 15, 30, 45, 60, 75, 90 PDD</td>
           <td>Automated SMS + CC call (every 15 days, 2 calls)</td>
-          <td style="color: var(--accent); font-family: var(--font-mono); font-size: 11px;">Deni lako la NipeBoost limepitiliza siku {N}. Lipa Shxxxxx... au angalia kwenye menu kusogeza muda</td>
+          <td style="color: var(--accent); font-family: var(--font-mono); font-size: 11px;">Deni lako la Revolver limepitiliza siku {N}. Lipa Shxxxxx... au angalia kwenye menu kusogeza muda</td>
           <td><span class="tag tag-orange">Escalating</span></td>
         </tr>
         <tr>
           <td><span class="tag" style="background:rgba(255,0,0,0.1);color:#ff4444;border:1px solid rgba(255,0,0,0.2);">PDD2 – 90–120 days</span></td>
           <td>90–120 days past due</td>
           <td>KAO site visit. HR assistance. PTP letter. NMB direct debit form.</td>
-          <td style="color: var(--accent); font-family: var(--font-mono); font-size: 11px;">Deni lako la NipeBoost limepitiliza miezi 3... Kuepuka hatua za kisheria na kupelekwa taarifa zako CRB lipa Shxxxxxx mara moja.</td>
+          <td style="color: var(--accent); font-family: var(--font-mono); font-size: 11px;">Deni lako la Revolver limepitiliza miezi 3... Kuepuka hatua za kisheria na kupelekwa taarifa zako CRB lipa Shxxxxxx mara moja.</td>
           <td><span class="tag" style="background:rgba(255,0,0,0.1);color:#ff4444;border:1px solid rgba(255,0,0,0.2);">Legal warning</span></td>
         </tr>
         <tr>
@@ -1760,7 +1760,7 @@ Asante kwa kutumia NIPEBOOST.</div>
 <footer>
   <div class="left">
     <div style="font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px;">REVOLVER — Technical Requirements</div>
-    <div>Nipeboost / Bayport Tanzania — Device Financing Revolving Credit</div>
+    <div>Revolver / Bayport Tanzania — Device Financing Revolving Credit</div>
   </div>
   <div class="right">
     <div>Version 1.0 — April 2026</div>

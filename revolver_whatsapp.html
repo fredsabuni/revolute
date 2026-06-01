@@ -220,7 +220,7 @@ html,body{height:100%;font-family:'Google Sans',system-ui,sans-serif;overflow:hi
       <div class="sb-logo">R</div>
       <div>
         <div class="sb-brand">REVOLVER</div>
-        <div class="sb-tagline">by Nipeboost · Flow Demo</div>
+        <div class="sb-tagline">by Revolver · Flow Demo</div>
       </div>
     </div>
     <div class="sb-body">
@@ -249,7 +249,7 @@ html,body{height:100%;font-family:'Google Sans',system-ui,sans-serif;overflow:hi
   <div class="chat-panel">
     <div class="wa-hdr">
       <div class="av">R<div class="av-dot"></div></div>
-      <div><div class="wa-name">REVOLVER</div><div class="wa-sub" id="wa-sub">Nipeboost Financial Services</div></div>
+      <div><div class="wa-name">REVOLVER</div><div class="wa-sub" id="wa-sub">Revolver Financial Services</div></div>
       <div class="hdr-actions"><span>📞</span><span>⋮</span></div>
     </div>
     <div class="chat" id="chat">
@@ -419,7 +419,7 @@ function menu(heading,items,handler){
 ───────────────────────────────────── */
 async function startKyc(){
   setFlow('kyc_intro');
-  await say(`Habari! 👋 Welcome to <b>REVOLVER</b> by Nipeboost.<br><br>Tanzania's fastest revolving credit — salary-backed, mobile-first.<br><br>Please review and confirm your registration details below:`,650);
+  await say(`Habari! 👋 Welcome to <b>REVOLVER</b> by Revolver.<br><br>Tanzania's fastest revolving credit — salary-backed, mobile-first.<br><br>Please review and confirm your registration details below:`,650);
   showKycForm();
 }
 function showKycForm(){
@@ -473,7 +473,7 @@ async function submitKyc(card){
 ───────────────────────────────────── */
 async function startReturning(){
   setFlow('ret_intro');S.acct=buildAcct(DUMMY);
-  await say(`Habari! 👋 Welcome back to <b>REVOLVER</b> by Nipeboost.`,500);
+  await say(`Habari! 👋 Welcome back to <b>REVOLVER</b> by Revolver.`,500);
   menu('How can we help?',['Login to my account','Register as a new user'],async n=>{
     if(n===2){await switchToNew();return;}
     document.getElementById('wa-sub').textContent='Verifying…';
@@ -573,7 +573,7 @@ function ussdPopup(type,partialAmt){
   const balRow=type==='partial'?`<div style="display:flex;justify-content:space-between;font-size:12px;padding:6px 0;border-top:1px solid rgba(255,255,255,.07);margin-top:6px"><span style="color:rgba(255,255,255,.4)">Remaining</span><span style="font-weight:700;color:${bal===0?'#00a884':'#f59e0b'}">TZS ${fmt(bal)}</span></div>`:'';
   const ov=document.createElement('div');ov.className='ussd-ov';ov.id='ussd-ov';
   ov.innerHTML=`<div class="ussd-box">
-    <div class="uh"><div class="uh-row"><span style="background:${bg[mno]};width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;color:#fff;font-weight:800;flex-shrink:0">${mno[0]}</span>${mno}<small>Payment Request</small></div><div class="ucode">*150*49# · REVOLVER by Nipeboost</div></div>
+    <div class="uh"><div class="uh-row"><span style="background:${bg[mno]};width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;color:#fff;font-weight:800;flex-shrink:0">${mno[0]}</span>${mno}<small>Payment Request</small></div><div class="ucode">*150*49# · REVOLVER by Revolver</div></div>
     <div class="ub"><p>${lbl}</p><div class="ua"><span class="ua-l">Amount to pay</span><span class="ua-v">TZS ${fmt(amount)}</span></div>${balRow}<div class="ud">Paybill: <b>400200</b> Mpesa · <b>510900</b> Tigo · <b>788800</b> Airtel<br>Account no: <b>${S.acct.ref}</b></div></div>
     <div class="uf"><button class="ufbtn ok" id="u-ok">✓ Confirm</button><button class="ufbtn no" id="u-no">✗ Cancel</button></div>
   </div>`;
@@ -685,7 +685,7 @@ async function reset(){
   inp.type='text';inp.placeholder='Message';inp.value='';
   S.flow='start';S.kyc={...DUMMY};S.loanAmt=0;S.newPin='';S.menuShown=false;S.pendingSummary=null;
   document.getElementById('chips').style.display='none';
-  document.getElementById('wa-sub').textContent='Nipeboost Financial Services';
+  document.getElementById('wa-sub').textContent='Revolver Financial Services';
   addChip();addSys('🔒 Messages are end-to-end encrypted');
   updateProgress();
   if(S.mode==='new')await startKyc();else await startReturning();
